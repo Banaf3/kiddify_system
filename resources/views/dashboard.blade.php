@@ -12,8 +12,18 @@
                 style="border: 2px solid rgba(236, 72, 153, 0.1);">
                 <div class="p-8">
                     <div>
-                        <h3 class="text-2xl font-bold" style="color: #9333EA;">Welcome back,
-                            {{ Auth::user()->name }}!</h3>
+                        <div class="flex items-center gap-3 mb-4">
+                            <h3 class="text-2xl font-bold" style="color: #9333EA;">Welcome back,
+                                {{ Auth::user()->name }}!</h3>
+                            <span class="px-4 py-1 rounded-full text-sm font-semibold
+                                @if(Auth::user()->isAdmin()) bg-red-100 text-red-700
+                                @elseif(Auth::user()->isTeacher()) bg-blue-100 text-blue-700
+                                @elseif(Auth::user()->isStudent()) bg-green-100 text-green-700
+                                @elseif(Auth::user()->isParent()) bg-purple-100 text-purple-700
+                                @endif">
+                                {{ ucfirst(Auth::user()->role) }}
+                            </span>
+                        </div>
                         <p class="text-gray-600 mt-1">{{ __("You're logged in successfully") }}</p>
                     </div>
                 </div>

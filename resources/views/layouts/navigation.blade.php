@@ -6,7 +6,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}">
+                    <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-16 w-auto"
                             style="filter: drop-shadow(0 2px 4px rgba(255, 105, 180, 0.2));" />
                     </a>
@@ -140,9 +140,19 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
-                            class="inline-flex items-center px-4 py-2 border-2 border-pink-300 text-sm leading-4 font-semibold rounded-xl bg-white hover:bg-pink-50 focus:outline-none transition ease-in-out duration-200"
+                            class="profile-dropdown-trigger inline-flex items-center px-4 py-2 border-2 border-pink-300 text-sm leading-4 font-semibold rounded-xl bg-white focus:outline-none transition-all ease-in-out duration-300"
                             style="color: #9333EA;">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="user-name-text">{{ Auth::user()->name }}</span>
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold
+                                    @if(Auth::user()->isAdmin()) bg-red-100 text-red-700
+                                    @elseif(Auth::user()->isTeacher()) bg-blue-100 text-blue-700
+                                    @elseif(Auth::user()->isStudent()) bg-green-100 text-green-700
+                                    @elseif(Auth::user()->isParent()) bg-purple-100 text-purple-700
+                                    @endif">
+                                    {{ ucfirst(Auth::user()->role) }}
+                                </span>
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -153,23 +163,100 @@
                                 </svg>
                             </div>
                         </button>
+                        <style>
+                            .profile-dropdown-trigger {
+                                position: relative;
+                                overflow: hidden;
+                            }
+                            
+                            .profile-dropdown-trigger::before {
+                                content: '';
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+                                opacity: 0;
+                                transition: opacity 0.3s ease-in-out;
+                                border-radius: 0.75rem;
+                            }
+                            
+                            .profile-dropdown-trigger:hover::before {
+                                opacity: 1;
+                            }
+                            
+                            .profile-dropdown-trigger:hover {
+                                border-color: #EC4899;
+                                box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+                                transform: translateY(-1px);
+                            }
+                            
+                            .profile-dropdown-trigger:hover .user-name-text {
+                                background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
+                                -webkit-background-clip: text;
+                                -webkit-text-fill-color: transparent;
+                                background-clip: text;
+                            }
+                        </style>
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                        <div style="padding: 0.5rem;">
+                            <x-dropdown-link :href="route('profile.edit')" class="dropdown-menu-item">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                    </path>
+                                </svg>
+                                {{ __('Profile') }}
                             </x-dropdown-link>
-                        </form>
+
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+
+                                <x-dropdown-link :href="route('logout')" class="dropdown-menu-item"
+                                    onclick="event.preventDefault();
+                                                    this.closest('form').submit();">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                        </path>
+                                    </svg>
+                                    {{ __('Log Out') }}
+                                </x-dropdown-link>
+                            </form>
+                        </div>
+                        <style>
+                            .dropdown-menu-item {
+                                position: relative;
+                                display: block;
+                                padding: 0.75rem 1rem;
+                                border-radius: 0.5rem;
+                                transition: all 0.3s ease-in-out;
+                                color: #374151;
+                                font-weight: 500;
+                            }
+                            
+                            .dropdown-menu-item:hover {
+                                background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+                                transform: translateX(4px);
+                                box-shadow: 0 2px 8px rgba(236, 72, 153, 0.1);
+                            }
+                            
+                            .dropdown-menu-item:hover span,
+                            .dropdown-menu-item:hover {
+                                background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
+                                -webkit-background-clip: text;
+                                -webkit-text-fill-color: transparent;
+                                background-clip: text;
+                            }
+                            
+                            .dropdown-menu-item:hover svg {
+                                stroke: #EC4899;
+                            }
+                        </style>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -245,7 +332,17 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
+                <div class="flex items-center gap-2">
+                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold
+                        @if(Auth::user()->isAdmin()) bg-red-100 text-red-700
+                        @elseif(Auth::user()->isTeacher()) bg-blue-100 text-blue-700
+                        @elseif(Auth::user()->isStudent()) bg-green-100 text-green-700
+                        @elseif(Auth::user()->isParent()) bg-purple-100 text-purple-700
+                        @endif">
+                        {{ ucfirst(Auth::user()->role) }}
+                    </span>
+                </div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
 
