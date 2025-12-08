@@ -7,24 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     protected $primaryKey = 'CourseID';
-
     protected $fillable = [
-        'teachersID', 'Title', 'description', 'Start_time',
-        'end_time', 'days', 'T_name', 'maxStudent', 'StudentID'
+        'teachersID', 'Title', 'description', 'Start_time', 'end_time', 'days', 'maxStudent'
     ];
 
-    public function teacher()
-    {
-        return $this->belongsTo(Teacher::class, 'teachersID');
+    public function teacher() {
+        return $this->belongsTo(Teacher::class, 'teachersID', 'teachersID');
     }
 
-    public function student()
-    {
-        return $this->belongsTo(Student::class, 'StudentID');
-    }
-
-    public function assessments()
-    {
-        return $this->hasMany(Assessment::class, 'CourseID');
+    public function students() {
+        return $this->belongsToMany(Student::class, 'course_student', 'course_id', 'student_id');
     }
 }
