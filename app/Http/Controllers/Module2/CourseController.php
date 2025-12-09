@@ -10,41 +10,48 @@ use App\Models\Student;
 
 class CourseController extends Controller
 {
-    // List all courses
+    // ---------------------------------------------------------
+    // SHOW ALL COURSES
+    // ---------------------------------------------------------
     public function index()
     {
-        $courses = Course::with('teacher', 'students')->get();
-        return view('module2.courses.index', compact('courses'));
+        $courses = Course::with('teacher')->get();
+        return view('module2.course_index', compact('courses'));
     }
 
-    // Show form to create a new course
+    // ---------------------------------------------------------
+    // SHOW CREATE FORM
+    // ---------------------------------------------------------
     public function create()
     {
         $teachers = Teacher::all();
         $students = Student::all();
-        return view('module2.courses.create', compact('teachers', 'students'));
+
+        return view('module2.course_create', compact('teachers', 'students'));
     }
 
-    // Store new course
+    // ---------------------------------------------------------
+    // STORE NEW COURSE
+    // ---------------------------------------------------------
     public function store(Request $request)
     {
         $request->validate([
-            'Title' => 'required|string|max:30',
-            'teachersID' => 'required|exists:teachers,teachersID',
-            'Start_time' => 'required',
-            'end_time' => 'required',
-            'days' => 'required|array',
-            'student_ids' => 'required|array',
+            "Title" => "required|string|max:30",
+            "teachersID" => "required|exists:teachers,teachersID",
+            "Start_time" => "required",
+            "end_time" => "required",
+            "days" => "required|array",
+            "student_ids" => "required|array",
         ]);
 
         $course = Course::create([
-            'Title' => $request->Title,
-            'teachersID' => $request->teachersID,
-            'description' => $request->description,
-            'Start_time' => $request->Start_time,
-            'end_time' => $request->end_time,
-            'days' => json_encode($request->days),
-            'maxStudent' => $request->maxStudent,
+            "Title" => $request->Title,
+            "teachersID" => $request->teachersID,
+            "description" => $request->description,
+            "Start_time" => $request->Start_time,
+            "end_time" => $request->end_time,
+            "days" => json_encode($request->days),
+            "maxStudent" => $request->maxStudent,
         ]);
 
         $course->students()->sync($request->student_ids);
@@ -52,37 +59,50 @@ class CourseController extends Controller
         return redirect()->route('courses.index')->with('success', 'Course created successfully.');
     }
 
-    // Show form to edit existing course
+    // ---------------------------------------------------------
+    // SHOW EDIT FORM
+    // ---------------------------------------------------------
     public function edit($id)
     {
-        $course = Course::with('students')->findOrFail($id);
+        $course = Course::findOrFail($id);
         $teachers = Teacher::all();
         $students = Student::all();
-        return view('module2.courses.edit', compact('course', 'teachers', 'students'));
+        $selectedStudents = $course->students->pluck('studentID')->toArray();
+        $selectedDays = json_decode($course->days, true);
+
+        return view('module2.course_edit', compact(
+            'course',
+            'teachers',
+            'students',
+            'selectedStudents',
+            'selectedDays'
+        ));
     }
 
-    // Update existing course
+    // ---------------------------------------------------------
+    // UPDATE COURSE
+    // ---------------------------------------------------------
     public function update(Request $request, $id)
     {
         $request->validate([
-            'Title' => 'required|string|max:30',
-            'teachersID' => 'required|exists:teachers,teachersID',
-            'Start_time' => 'required',
-            'end_time' => 'required',
-            'days' => 'required|array',
-            'student_ids' => 'required|array',
+            "Title" => "required|string|max:30",
+            "teachersID" => "required|exists:teachers,teachersID",
+            "Start_time" => "required",
+            "end_time" => "required",
+            "days" => "required|array",
+            "student_ids" => "required|array",
         ]);
 
         $course = Course::findOrFail($id);
 
         $course->update([
-            'Title' => $request->Title,
-            'teachersID' => $request->teachersID,
-            'description' => $request->description,
-            'Start_time' => $request->Start_time,
-            'end_time' => $request->end_time,
-            'days' => json_encode($request->days),
-            'maxStudent' => $request->maxStudent,
+            "Title" => $request->Title,
+            "teachersID" => $request->teachersID,
+            "description" => $request->description,
+            "Start_time" => $request->Start_time,
+            "end_time" => $request->end_time,
+            "days" => json_encode($request->days),
+            "maxStudent" => $request->maxStudent,
         ]);
 
         $course->students()->sync($request->student_ids);
@@ -90,13 +110,26 @@ class CourseController extends Controller
         return redirect()->route('courses.index')->with('success', 'Course updated successfully.');
     }
 
-    // Delete a course
+    // ---------------------------------------------------------
+    // DELETE COURSE
+    // ---------------------------------------------------------
     public function destroy($id)
     {
         $course = Course::findOrFail($id);
-        $course->students()->detach(); // remove pivot table relations
+        $course->students()->detach();
         $course->delete();
 
-        return redirect()->route('courses.index')->with('success', 'Course deleted successfully.');
+        return redirect()->back()->with('success', 'Course deleted.');
+    }
+
+    // ---------------------------------------------------------
+    // VIEW STUDENTS IN COURSE
+    // ---------------------------------------------------------
+    public function viewStudents($id)
+    {
+        $course = Course::findOrFail($id);
+        $students = $course->students;
+
+        return view('module2.course_students', compact('course', 'students'));
     }
 }
