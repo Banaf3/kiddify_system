@@ -47,18 +47,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
     });
 
-    //assessment route 
+    //section route 
+Route::middleware(['auth', 'can:isTeacher'])->group(function () {
+    Route::get('/teacher/assessments', [SectionController::class, 'index'])->name('teacher.assessments');
+    Route::post('/sectionsStore', [SectionController::class, 'store'])->name('sections.store');
 
+    // Edit & Update
+    Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
+    Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
 
-// Show all sections (assessments page)
-Route::get('/teacher/assessments', [SectionController::class, 'index'])
-    ->name('teacher.assessments')
+    // Delete
+    Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+});
+
+Route::get('/sections/{section}/questions/create', [AssessmentController::class, 'create'])
+    ->name('teacher.add-questions')
     ->middleware(['auth', 'can:isTeacher']);
 
-// Store new section
-Route::post('/sectionsStore', [SectionController::class, 'store'])
-    ->name('sections.store')
-    ->middleware(['auth', 'can:isTeacher']);
+
+
 
 
 
