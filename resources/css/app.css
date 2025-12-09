@@ -7,7 +7,8 @@
     /* Input Fields */
     input[type="text"],
     input[type="email"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="date"] {
         @apply w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-900 transition-all duration-300;
         @apply focus:border-pink-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-pink-100;
         font-size: 15px;
@@ -16,7 +17,8 @@
 
     input[type="text"]:hover,
     input[type="email"]:hover,
-    input[type="password"]:hover {
+    input[type="password"]:hover,
+    input[type="date"]:hover {
         @apply border-pink-300 bg-white;
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(236, 72, 153, 0.15);
@@ -24,15 +26,52 @@
 
     input[type="text"]:focus,
     input[type="email"]:focus,
-    input[type="password"]:focus {
+    input[type="password"]:focus,
+    input[type="date"]:focus {
         transform: translateY(-2px) scale(1.01);
         box-shadow: 0 10px 30px rgba(236, 72, 153, 0.2);
+    }
+
+    /* Date Input Styling */
+    input[type="date"] {
+        color-scheme: light !important;
+        background-color: rgb(249 250 251) !important;
+        color: rgb(17 24 39) !important;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.5);
+        cursor: pointer;
+        background-color: transparent;
+    }
+
+    input[type="date"]::-webkit-datetime-edit {
+        color: rgb(17 24 39) !important;
+        background-color: transparent;
+    }
+
+    input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+        color: rgb(17 24 39) !important;
+        background-color: transparent;
+    }
+
+    input[type="date"]::-webkit-datetime-edit-text {
+        color: rgb(17 24 39) !important;
+    }
+
+    input[type="date"]::-webkit-datetime-edit-month-field,
+    input[type="date"]::-webkit-datetime-edit-day-field,
+    input[type="date"]::-webkit-datetime-edit-year-field {
+        color: rgb(17 24 39) !important;
+        background-color: transparent;
     }
 
     /* Labels */
     label {
         @apply block text-sm font-semibold mb-2;
-        color: #6B7280;
+        color: #1F2937 !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
     }
 
     /* Primary Button */

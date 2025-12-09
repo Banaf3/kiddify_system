@@ -18,19 +18,19 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-         <!-- Phone Number -->
+        <!-- Phone Number -->
         <div class="mt-4">
             <x-input-label for="phone_number" :value="__('Phone Number')" />
-            <x-text-input id="phone_number" class="block mt-1 w-full" type="text"
-                name="phone_number" :value="old('phone_number')" required />
+            <x-text-input id="phone_number" class="block mt-1 w-full" type="text" name="phone_number"
+                :value="old('phone_number')" required />
             <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
         </div>
 
         <!-- Gender -->
         <div class="mt-4">
             <x-input-label for="gender" :value="__('Gender')" />
-            <select id="gender" name="gender"
-                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+            <select id="gender" name="gender" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                required>
                 <option value="">Select gender</option>
                 <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
                 <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
@@ -41,16 +41,15 @@
         <!-- Date of Birth -->
         <div class="mt-4">
             <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
-            <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date"
-                name="date_of_birth" :value="old('date_of_birth')" required />
+            <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date" name="date_of_birth"
+                :value="old('date_of_birth')" required style="color-scheme: light;" />
             <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
         </div>
 
         <!-- Address -->
         <div class="mt-4">
             <x-input-label for="address" :value="__('Address')" />
-            <textarea id="address" name="address"
-                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>{{ old('address') }}</textarea>
+            <textarea id="address" name="address" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>{{ old('address') }}</textarea>
             <x-input-error :messages="$errors->get('address')" class="mt-2" />
         </div>
 
@@ -77,8 +76,7 @@
         <!-- Role -->
         <div class="mt-4">
             <x-input-label for="role" :value="__('I am a...')" />
-            <select id="role" name="role" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
+            <select id="role" name="role" class="block mt-1 w-full" required>
                 <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
                 <option value="parent" {{ old('role') == 'parent' ? 'selected' : '' }}>Parent</option>
                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>

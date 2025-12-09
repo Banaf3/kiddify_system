@@ -24,7 +24,7 @@
                         {{ __('Dashboard') }}
                     </a>
 
-                    @if(Auth::user()->isAdmin())
+                    @if (Auth::user()->isAdmin())
                         <!-- Admin Navigation -->
                         <a href="{{ route('admin.users') }}"
                             class="guest-nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
@@ -122,6 +122,7 @@
                             </svg>
                             {{ __('My Kids') }}
                         </a>
+
                         <a href="{{ route('parent.reports') }}"
                             class="guest-nav-link {{ request()->routeIs('parent.reports') ? 'active' : '' }}">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,6 +131,15 @@
                                 </path>
                             </svg>
                             {{ __('Reports') }}
+                        </a>
+                        <a href="{{ route('parent.add-kid') }}"
+                            class="guest-nav-link {{ request()->routeIs('parent.add-kid') ? 'active' : '' }}">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                                </path>
+                            </svg>
+                            {{ __('Add Kid') }}
                         </a>
                     @endif
                 </div>
@@ -198,7 +208,7 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            @if(Auth::user()->isAdmin())
+            @if (Auth::user()->isAdmin())
                 <!-- Admin Responsive Navigation -->
                 <x-responsive-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')">
                     {{ __('Users') }}

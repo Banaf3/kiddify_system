@@ -21,11 +21,22 @@
 
     <div class="min-h-screen flex flex-col justify-center items-center py-12 px-4"
         style="background: linear-gradient(135deg, #FFF5F7 0%, #F0E8FF 100%);">
-        <div class="w-full max-w-md px-8 py-8 bg-white shadow-2xl overflow-hidden"
+        <div class="w-full max-w-md px-8 py-8 bg-white shadow-2xl overflow-hidden transition-all duration-300"
             style="border-radius: 24px; box-shadow: 0 20px 60px rgba(147, 112, 219, 0.2);">
             {{ $slot }}
         </div>
     </div>
+
+    <style>
+        .w-full.max-w-md {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .w-full.max-w-md:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 25px 70px rgba(147, 112, 219, 0.3) !important;
+        }
+    </style>
 </body>
 
 </html>

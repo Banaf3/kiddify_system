@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Module2\CourseController; 
+use App\Http\Controllers\Module2\CourseController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 Route::get('/', function () {
     Auth::logout();
@@ -26,13 +27,51 @@ Route::middleware('auth')->group(function () {
     // Admin Routes
     Route::middleware('can:isAdmin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', function () {
-            return view('admin.users');
+            $users = App\Models\User::orderBy('created_at', 'desc')->get();
+            return view('admin.users', compact('users'));
         })->name('users');
-        
+
+        Route::delete('/users/{id}', function ($id) {
+            $user = App\Models\User::findOrFail($id);
+            $user->delete();
+            return redirect()->route('admin.users')->with('success', 'User deleted successfully!');
+        })->name('users.delete');
+
+        Route::get('/users/{id}/edit', function ($id) {
+            $user = App\Models\User::findOrFail($id);
+            return view('admin.users-edit', compact('user'));
+        })->name('users.edit');
+
+        Route::put('/users/{id}', function (Illuminate\Http\Request $request, $id) {
+            $user = App\Models\User::findOrFail($id);
+
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'phone_number' => 'required|string|max:20',
+                'gender' => 'required|in:male,female',
+                'address' => 'required|string',
+                'date_of_birth' => 'required|date',
+                'role' => 'required|in:admin,teacher,student,parent',
+            ]);
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'gender' => $request->gender,
+                'address' => $request->address,
+                'date_of_birth' => $request->date_of_birth,
+                'role' => $request->role,
+            ]);
+
+            return redirect()->route('admin.users')->with('success', 'User updated successfully!');
+        })->name('users.update');
+
         Route::get('/courses', function () {
             return view('admin.courses');
         })->name('courses');
-        
+
         Route::get('/reports', function () {
             return view('admin.reports');
         })->name('reports');
@@ -47,7 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
     });
 
-    //section route 
+    //section route
 Route::middleware(['auth', 'can:isTeacher'])->group(function () {
     Route::get('/teacher/assessments', [SectionController::class, 'index'])->name('teacher.assessments');
     Route::post('/sectionsStore', [SectionController::class, 'store'])->name('sections.store');
@@ -87,11 +126,11 @@ Route::get('/sections/{section}/questions/create', [AssessmentController::class,
         Route::get('/courses', function () {
             return view('student.courses');
         })->name('courses');
-        
+
         Route::get('/assessments', function () {
             return view('student.assessments');
         })->name('assessments');
-        
+
         Route::get('/results', function () {
             return view('student.results');
         })->name('results');
@@ -100,9 +139,52 @@ Route::get('/sections/{section}/questions/create', [AssessmentController::class,
     // Parent Routes
     Route::middleware('can:isParent')->prefix('parent')->name('parent.')->group(function () {
         Route::get('/kids', function () {
-            return view('parent.kids');
+            // Get all students where UserID matches the current parent's user ID
+            $kids = App\Models\Student::where('UserID', Auth::user()->id)
+                ->with('user') // Load the related user data
+                ->get();
+
+            return view('parent.kids', compact('kids'));
         })->name('kids');
-        
+
+        Route::get('/add-kid', function () {
+            return view('parent.add-kid');
+        })->name('add-kid');
+
+        Route::post('/store-kid', function (Illuminate\Http\Request $request) {
+            $request->validate([
+                'kid_name' => 'required|string|max:255',
+                'kid_email' => 'required|email|unique:users,email',
+                'kid_phone' => 'nullable|string|max:20',
+                'kid_gender' => 'required|in:male,female',
+                'kid_dob' => 'required|date',
+                'kid_address' => 'required|string',
+            ]);
+
+            // Create user account for the kid
+            $user = App\Models\User::create([
+                'name' => $request->kid_name,
+                'email' => $request->kid_email,
+                'password' => Hash::make('student123'),
+                'role' => 'student',
+                'phone_number' => $request->kid_phone ?? '',
+                'gender' => $request->kid_gender,
+                'date_of_birth' => $request->kid_dob,
+                'address' => $request->kid_address,
+            ]);
+
+            // Create student record with parent's user ID
+            App\Models\Student::create([
+                'user_id' => $user->id,
+                'UserID' => Auth::user()->id,
+                'school_branch' => 'Main Branch',
+                'class_name' => 'Not Assigned',
+                'account_status' => 'active',
+            ]);
+
+            return redirect()->route('parent.kids')->with('success', 'Kid added successfully!');
+        })->name('store-kid');
+
         Route::get('/reports', function () {
             return view('parent.reports');
         })->name('reports');

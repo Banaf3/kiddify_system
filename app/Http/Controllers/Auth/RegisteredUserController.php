@@ -53,11 +53,41 @@ class RegisteredUserController extends Controller
         'date_of_birth' => $request->date_of_birth,
     ]);
 
+    // Create teacher record if role is teacher
+    if ($request->role === 'teacher') {
+        \App\Models\Teacher::create([
+            'user_id' => $user->id,
+            'UserID' => $user->id,
+            'qualification' => 'Not Specified',
+            'experience_years' => 0,
+            'school_branch' => 'Main Branch',
+            'account_status' => 'active',
+        ]);
+    }
+
+    // Create student record if role is student
+    if ($request->role === 'student') {
+        \App\Models\Student::create([
+            'user_id' => $user->id,
+            'UserID' => null,
+            'school_branch' => 'Main Branch',
+            'class_name' => 'Not Assigned',
+            'account_status' => 'active',
+        ]);
+    }
+
+    // Create parent record if role is parent
+    if ($request->role === 'parent') {
+        \App\Models\ParentModel::create([
+            'user_id' => $user->id,
+            'occupation' => 'Not Specified',
+            'account_status' => 'active',
+        ]);
+    }
+
     event(new Registered($user));
 
-    Auth::login($user);
-
-    return redirect()->route('dashboard');
+    return redirect()->route('login')->with('status', 'Registration successful! Please login.');
 }
 
 }

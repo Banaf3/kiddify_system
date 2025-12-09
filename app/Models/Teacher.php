@@ -9,7 +9,7 @@ class Teacher extends Model
     protected $primaryKey = 'teachersID';
 
     protected $fillable = [
-        'user_id', 'qualification', 'experience_years',
+        'user_id', 'UserID', 'qualification', 'experience_years',
         'school_branch', 'account_status'
     ];
 
