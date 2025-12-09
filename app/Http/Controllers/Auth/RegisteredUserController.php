@@ -27,26 +27,37 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:admin,teacher,student,parent'],
-        ]);
+   public function store(Request $request): RedirectResponse
+{
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
+        'role' => ['required', 'in:admin,teacher,student,parent'],
+        'phone_number' => ['required', 'string', 'max:20'],
+        'gender' => ['required', 'in:male,female'],
+        'address' => ['required', 'string', 'max:500'],
+        'date_of_birth' => ['required', 'date'],
+    ]);
 
-        event(new Registered($user));
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
 
-        Auth::login($user);
+        'role' => $request->role,
+        'phone_number' => $request->phone_number,
+        'gender' => $request->gender,
+        'address' => $request->address,
+        'date_of_birth' => $request->date_of_birth,
+    ]);
 
-        return redirect(route('dashboard', absolute: false));
-    }
+    event(new Registered($user));
+
+    Auth::login($user);
+
+    return redirect()->route('dashboard');
+}
+
 }

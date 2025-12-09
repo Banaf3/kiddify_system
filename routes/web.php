@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Module2\CourseController; 
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,16 +47,29 @@ Route::middleware('auth')->group(function () {
     Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
     });
 
+    //assessment route 
+
+
+// Show all sections (assessments page)
+Route::get('/teacher/assessments', [SectionController::class, 'index'])
+    ->name('teacher.assessments')
+    ->middleware(['auth', 'can:isTeacher']);
+
+// Store new section
+Route::post('/sectionsStore', [SectionController::class, 'store'])
+    ->name('sections.store')
+    ->middleware(['auth', 'can:isTeacher']);
+
+
+
+
+
     // Teacher Routes
     Route::middleware('can:isTeacher')->prefix('teacher')->name('teacher.')->group(function () {
         Route::get('/courses', function () {
             return view('teacher.courses');
         })->name('courses');
-        
-        Route::get('/assessments', function () {
-            return view('teacher.assessments');
-        })->name('assessments');
-        
+
         Route::get('/grading', function () {
             return view('teacher.grading');
         })->name('grading');

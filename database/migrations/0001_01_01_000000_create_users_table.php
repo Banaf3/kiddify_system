@@ -21,7 +21,7 @@ return new class extends Migration
             // ➕ New fields added
             $table->string('phone_number', 15);
             $table->string('gender', 10);
-            $table->string('address', 30);
+             $table->string('address', 500);
             $table->date('date_of_birth');
 
             $table->rememberToken();
