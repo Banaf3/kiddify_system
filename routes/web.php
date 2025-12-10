@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+//Module 2 -- Course Registration
 use App\Http\Controllers\Module2\CourseController;
+use App\Http\Controllers\Module2\TeacherController;
+use App\Http\Controllers\Module2\StudentController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
@@ -76,15 +79,35 @@ Route::middleware('auth')->group(function () {
             return view('admin.reports');
         })->name('reports');
     });
-    // Module 2 -- Course Registration
-    Route::prefix('module2')->group(function() {
-    Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('courses/create', [CourseController::class, 'create'])->name('courses.create');
-    Route::post('courses', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('courses/{id}/edit', [CourseController::class, 'edit'])->name('courses.edit');
-    Route::put('courses/{id}', [CourseController::class, 'update'])->name('courses.update');
-    Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('courses.destroy');
-    });
+    // ===============================
+// MODULE 2 — ADMIN ROUTES
+// ===============================
+Route::prefix('admin/module2')->group(function () {
+    Route::get('courses', [CourseController::class, 'index'])->name('admin.courses.index');
+    Route::get('courses/create', [CourseController::class, 'create'])->name('admin.courses.create');
+    Route::post('courses', [CourseController::class, 'store'])->name('admin.courses.store');
+    Route::get('courses/{id}/edit', [CourseController::class, 'edit'])->name('admin.courses.edit');
+    Route::put('courses/{id}', [CourseController::class, 'update'])->name('admin.courses.update');
+    Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
+});
+
+// ===============================
+// MODULE 2 — TEACHER ROUTES
+// ===============================
+Route::prefix('teacher/module2')->group(function () {
+    Route::get('courses', [TeacherController::class, 'index'])->name('teacher.courses.index');
+    Route::get('courses/{id}', [TeacherController::class, 'show'])->name('teacher.courses.show');
+});
+
+// ===============================
+// MODULE 2 — STUDENT ROUTES
+// ===============================
+Route::prefix('student/module2')->group(function () {
+    Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
+    Route::get('courses/{id}', [StudentController::class, 'show'])->name('student.courses.show');
+});
+
+
 
     //section route
 Route::middleware(['auth', 'can:isTeacher'])->group(function () {
