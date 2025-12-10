@@ -157,26 +157,28 @@ Route::prefix('admin/module2')->group(function () {
     Route::get('courses/{id}/edit', [CourseController::class, 'edit'])->name('admin.courses.edit');
     Route::put('courses/{id}', [CourseController::class, 'update'])->name('admin.courses.update');
     Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
+
+    // Optional: view enrolled students
+    Route::get('courses/{id}/students', [CourseController::class, 'viewStudents'])->name('admin.courses.students');
 });
 
 // ===============================
 // MODULE 2 — TEACHER ROUTES
 // ===============================
-Route::prefix('teacher/module2')->group(function () {
+Route::prefix('teacher/module2')->middleware('auth:teacher')->group(function() {
     Route::get('courses', [TeacherController::class, 'index'])->name('teacher.courses.index');
-    Route::get('courses/{id}', [TeacherController::class, 'show'])->name('teacher.courses.show');
+    Route::get('courses/{courseID}', [TeacherController::class, 'viewCourseStudents'])->name('teacher.courses.show');
+    Route::get('schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
 });
 
 // ===============================
 // MODULE 2 — STUDENT ROUTES
 // ===============================
-Route::prefix('student/module2')->group(function () {
-    // List all courses the logged-in student is enrolled in
+Route::prefix('student/module2')->middleware('auth:student')->group(function () {
     Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
-
-    // View single course details
     Route::get('courses/{courseID}', [StudentController::class, 'viewCourse'])->name('student.courses.show');
 });
+
 
 
     //section route

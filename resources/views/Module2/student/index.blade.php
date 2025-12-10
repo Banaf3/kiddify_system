@@ -1,46 +1,41 @@
-{{-- resources/views/Module2/student/student_index.blade.php --}}
 @extends('layouts.navigation')
 
 @section('content')
-<div class="container mt-5">
+@section('module-content')
+<div class="module-header">
+    <h2>📚 My Courses</h2>
+</div>
 
-    <h2 class="fw-bold mb-4">🎒 My Courses</h2>
-
-    <div class="row g-4">
-        @forelse($courses as $course)
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-
-                <img src="https://via.placeholder.com/350x160?text={{ urlencode($course->Title) }}" 
-                    class="card-img-top" alt="Course">
-
-                <div class="card-body">
-                    <h4 class="card-title fw-bold">{{ $course->Title }}</h4>
-
-                    <p class="text-muted small">
-                        👨‍🏫 Instructor: <strong>{{ $course->teacher->T_name }}</strong>
-                    </p>
-
-                    <p class="small">
-                        <strong>Schedule:</strong><br>
-                        {{ $course->Start_time }} - {{ $course->end_time }} <br>
-                        @foreach(json_decode($course->days) as $day)
-                            <span class="badge bg-info">{{ $day }}</span>
-                        @endforeach
-                    </p>
-
-                    <a href="{{ route('student.courses.show', $course->CourseID) }}" 
-                       class="btn btn-primary w-100 mt-2">
-                        View Details
-                    </a>
-                </div>
-
-            </div>
-        </div>
-        @empty
-            <p>No courses registered yet.</p>
-        @endforelse
-    </div>
-
+<div class="card card-custom p-3">
+    @if($courses->isEmpty())
+        <div class="alert alert-info">You are not enrolled in any courses yet.</div>
+    @else
+    <table class="table table-hover align-middle">
+        <thead style="background: var(--admin-accent);">
+            <tr>
+                <th>Course Title</th>
+                <th>Teacher</th>
+                <th>Days</th>
+                <th>Time</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($courses as $course)
+            <tr>
+                <td>{{ $course->Title }}</td>
+                <td>{{ $course->teacher->name ?? 'N/A' }}</td>
+                <td>{{ implode(', ', json_decode($course->days, true)) }}</td>
+                <td>{{ $course->Start_time }} - {{ $course->end_time }}</td>
+                <td class="text-end">
+                    <a href="{{ route('student.courses.show', $course->CourseID) }}" class="btn btn-sm btn-info text-white">👀 View</a>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
 </div>
 @endsection
+@endsection
+

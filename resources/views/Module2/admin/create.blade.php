@@ -1,91 +1,68 @@
-@extends('layouts.admin_module2')
+@extends('layouts.navigation')
 
+@section('content')
 @section('module-content')
-
 <div class="module-header">
-    <h3>➕ Create New Course</h3>
+    <h2>➕ Add New Course</h2>
 </div>
 
 @if ($errors->any())
 <div class="alert alert-danger">
-    <strong>Validation Errors Found</strong>
     <ul>
         @foreach ($errors->all() as $error)
-        <li>⚠️ {{ $error }}</li>
+        <li>{{ $error }}</li>
         @endforeach
     </ul>
 </div>
 @endif
 
-<form method="POST" action="{{ route('admin.courses.store') }}" class="card card-custom p-4">
-    @csrf
-
-    <div class="row mb-3">
-        <label class="col-md-3 col-form-label">Course Title</label>
-        <div class="col-md-9">
-            <input type="text" name="Title" class="form-control" required>
+<div class="card card-custom p-4">
+    <form action="{{ route('admin.courses.store') }}" method="POST">
+        @csrf
+        <div class="mb-3">
+            <label>Course Title</label>
+            <input type="text" name="Title" class="form-control" value="{{ old('Title') }}">
         </div>
-    </div>
-
-    <div class="row mb-3">
-        <label class="col-md-3 col-form-label">Teacher</label>
-        <div class="col-md-9">
-            <select name="teachersID" class="form-control" required>
-                <option value="">Select Teacher</option>
+        <div class="mb-3">
+            <label>Teacher</label>
+            <select name="teachersID" class="form-select">
                 @foreach($teachers as $teacher)
                 <option value="{{ $teacher->teachersID }}">{{ $teacher->name }}</option>
                 @endforeach
             </select>
         </div>
-    </div>
-
-    <div class="row mb-3">
-        <label class="col-md-3 col-form-label">Description</label>
-        <div class="col-md-9">
-            <textarea name="description" class="form-control"></textarea>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <label class="col-md-3 col-form-label">Days</label>
-        <div class="col-md-9">
-            <select name="days[]" class="form-control" multiple required>
-                <option>Monday</option>
-                <option>Tuesday</option>
-                <option>Wednesday</option>
-                <option>Thursday</option>
-                <option>Friday</option>
+        <div class="mb-3">
+            <label>Days</label>
+            <select name="days[]" class="form-select" multiple>
+                @foreach(['Monday','Tuesday','Wednesday','Thursday','Friday'] as $day)
+                <option value="{{ $day }}">{{ $day }}</option>
+                @endforeach
             </select>
-            <small class="text-secondary">Hold CTRL to select multiple</small>
         </div>
-    </div>
-
-    <div class="row mb-3">
-        <label class="col-md-3 col-form-label">Start Time</label>
-        <div class="col-md-3">
-            <input type="time" name="Start_time" class="form-control" required>
+        <div class="mb-3">
+            <label>Start Time</label>
+            <input type="time" name="Start_time" class="form-control">
         </div>
-
-        <label class="col-md-3 col-form-label">End Time</label>
-        <div class="col-md-3">
-            <input type="time" name="end_time" class="form-control" required>
+        <div class="mb-3">
+            <label>End Time</label>
+            <input type="time" name="end_time" class="form-control">
         </div>
-    </div>
-
-    <div class="row mb-4">
-        <label class="col-md-3 col-form-label">Enroll Students</label>
-        <div class="col-md-9">
-            <select name="student_ids[]" multiple class="form-control" required>
+        <div class="mb-3">
+            <label>Students</label>
+            <select name="student_ids[]" class="form-select" multiple>
                 @foreach($students as $student)
                 <option value="{{ $student->studentID }}">{{ $student->name }}</option>
                 @endforeach
             </select>
         </div>
-    </div>
+        <div class="mb-3">
+            <label>Description</label>
+            <textarea name="description" class="form-control">{{ old('description') }}</textarea>
+        </div>
 
-    <div>
-        <button class="btn btn-admin">Create Course</button>
-    </div>
-</form>
-
+        <button class="btn btn-admin">💾 Save</button>
+    </form>
+</div>
 @endsection
+@endsection
+

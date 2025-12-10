@@ -3,36 +3,64 @@
 namespace App\Http\Controllers\Module2;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
 
 class TeacherController extends Controller
 {
-    // ---------------------------------------------------------
-    // STUDENT DASHBOARD — LIST OF COURSES STUDENT IS ENROLLED IN
-    // ---------------------------------------------------------
+    // -----------------------------
+    // TEACHER DASHBOARD — LIST COURSES
+    // -----------------------------
     public function index()
     {
-        $student = Auth::user(); // assumes Student model is used for auth
-        $courses = $student->courses()->with('teacher')->get();
+        $teacher = Auth::guard('teacher')->user();
 
-        return view('Module2.student_dashboard', compact('student', 'courses'));
-    }
-
-    // ---------------------------------------------------------
-    // VIEW SINGLE COURSE DETAILS
-    // ---------------------------------------------------------
-    public function viewCourse($courseID)
-    {
-        $student = Auth::user();
-        $course = Course::with('teacher', 'students')->findOrFail($courseID);
-
-        // Ensure student is enrolled
-        if (!$course->students->contains($student->id)) {
-            abort(403, 'You are not enrolled in this course.');
+        if (!$teacher) {
+            abort(403, 'Unauthorized access.');
         }
 
-        return view('Module2.student_course_detail', compact('course'));
+        $courses = Course::where('teachersID', $teacher->teachersID)->get();
+
+        return view('Module2.teacher.index', compact('teacher', 'courses'));
+    }
+
+    // -----------------------------
+    // VIEW STUDENTS ENROLLED IN COURSE
+    // -----------------------------
+    public function viewCourseStudents($courseID)
+    {
+        $teacher = Auth::guard('teacher')->user();
+
+        if (!$teacher) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $course = Course::findOrFail($courseID);
+
+        // Ensure teacher teaches this course
+        if ($course->teachersID !== $teacher->teachersID) {
+            abort(403, 'You do not teach this course.');
+        }
+
+        $students = $course->students;
+
+        return view('Module2.teacher.show', compact('course', 'students'));
+    }
+
+    // -----------------------------
+    // VIEW TEACHER SCHEDULE
+    // -----------------------------
+    public function schedule()
+    {
+        $teacher = Auth::guard('teacher')->user();
+
+        if (!$teacher) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $courses = Course::where('teachersID', $teacher->teachersID)->get();
+
+        return view('Module2.teacher.schedule', compact('teacher', 'courses'));
     }
 }
+

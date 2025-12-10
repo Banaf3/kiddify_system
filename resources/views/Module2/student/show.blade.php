@@ -1,35 +1,25 @@
-{{-- resources/views/Module2/student/student_show.blade.php --}}
 @extends('layouts.navigation')
 
 @section('content')
-<div class="container mt-5">
-
-    <a href="{{ route('student.courses.index') }}" class="btn btn-secondary mb-3">⬅ Back</a>
-
-    <div class="card shadow border-0">
-        <img src="https://via.placeholder.com/1000x300?text={{ urlencode($course->Title) }}"
-             class="card-img-top" alt="Course Image">
-
-        <div class="card-body">
-            <h2 class="fw-bold">{{ $course->Title }}</h2>
-
-            <p class="text-muted mt-2">
-                Instructor: <strong>{{ $course->teacher->T_name }}</strong>
-            </p>
-
-            <h5 class="mt-3">🕒 Time</h5>
-            <p>{{ $course->Start_time }} - {{ $course->end_time }}</p>
-
-            <h5 class="mt-3">📅 Days</h5>
-            @foreach(json_decode($course->days) as $day)
-                <span class="badge bg-primary">{{ $day }}</span>
-            @endforeach
-
-            <h5 class="mt-4">📘 Course Description</h5>
-            <p>{{ $course->description ?? 'No description available.' }}</p>
-
-        </div>
-    </div>
-
+@section('module-content')
+<div class="module-header">
+    <h2>📖 Course Details: {{ $course->Title }}</h2>
 </div>
+
+<div class="card card-custom p-4">
+    <p><strong>Teacher:</strong> {{ $course->teacher->name ?? 'N/A' }}</p>
+    <p><strong>Days:</strong> {{ implode(', ', json_decode($course->days, true)) }}</p>
+    <p><strong>Time:</strong> {{ $course->Start_time }} - {{ $course->end_time }}</p>
+    <p><strong>Description:</strong></p>
+    <p>{{ $course->description ?? '-' }}</p>
+
+    <hr>
+    <h5>Enrolled Students ({{ $course->students->count() }})</h5>
+    <ul>
+        @foreach($course->students as $student)
+        <li>{{ $student->name }} ({{ $student->email }})</li>
+        @endforeach
+    </ul>
+</div>
+@endsection
 @endsection

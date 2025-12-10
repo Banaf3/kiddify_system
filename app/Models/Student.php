@@ -1,8 +1,15 @@
 <?php
-
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; // <-- add this
+use App\Models\Course; // <-- add this
+use App\Models\User;
+use App\Models\StudentScore;
+use App\Models\TeacherFeedback;
+use App\Models\Family;
+
 class Student extends Model
 {
     protected $primaryKey = 'studentID';
@@ -31,6 +38,9 @@ class Student extends Model
         return $this->hasMany(Family::class, 'StudentID');
     }
 
+    // -----------------------------
+    // Student courses relationship
+    // -----------------------------
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -41,4 +51,3 @@ class Student extends Model
         );
     }
 }
-
