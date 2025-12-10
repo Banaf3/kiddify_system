@@ -30,5 +30,10 @@ class Student extends Model
     {
         return $this->hasMany(Family::class, 'StudentID');
     }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'course_student', 'student_id', 'course_id');
+    }
 }
 
