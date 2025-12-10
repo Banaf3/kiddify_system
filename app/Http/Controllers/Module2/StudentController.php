@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
+use App\Models\Student;
 
 class StudentController extends Controller
 {
@@ -14,7 +15,13 @@ class StudentController extends Controller
     // ---------------------------------------------------------
     public function index()
     {
-        $student = Auth::user(); // assumes Student model is used for auth
+        /** @var Student $student */
+        $student = Auth::guard('student')->user(); // use student guard
+
+        if (!$student) {
+            abort(403, 'Unauthorized access. Please log in as a student.');
+        }
+
         $courses = $student->courses()->with('teacher')->get();
 
         return view('Module2.student_dashboard', compact('student', 'courses'));
@@ -25,11 +32,17 @@ class StudentController extends Controller
     // ---------------------------------------------------------
     public function viewCourse($courseID)
     {
-        $student = Auth::user();
+        /** @var Student $student */
+        $student = Auth::guard('student')->user();
+
+        if (!$student) {
+            abort(403, 'Unauthorized access. Please log in as a student.');
+        }
+
         $course = Course::with('teacher', 'students')->findOrFail($courseID);
 
-        // Ensure student is enrolled
-        if (!$course->students->contains($student->id)) {
+        // Optional: check enrollment
+        if (!$course->students->contains($student->studentID)) {
             abort(403, 'You are not enrolled in this course.');
         }
 
