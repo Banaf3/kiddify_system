@@ -19,10 +19,11 @@ return new class extends Migration
             $table->string('password');
 
             // ➕ New fields added
-            $table->string('phone_number', 15);
-            $table->string('gender', 10);
-            $table->string('address', 30);
-            $table->date('date_of_birth');
+            // i made it nullable to avoid issues during user creation
+            $table->string('phone_number', 15)->nullable(); 
+            $table->string('gender', 10)->nullable();
+            $table->string('address', 30)->nullable();
+            $table->date('date_of_birth')->nullable();
 
             $table->rememberToken();
             $table->timestamps();
