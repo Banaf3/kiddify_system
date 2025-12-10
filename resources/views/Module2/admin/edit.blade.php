@@ -1,4 +1,4 @@
-@extends('layouts.navigation')
+@extends('layouts.admin_module2')
 
 @section('content')
 @section('module-content')

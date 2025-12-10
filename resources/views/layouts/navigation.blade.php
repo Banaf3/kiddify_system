@@ -44,10 +44,18 @@
                             </svg>
                             {{ __('Add Teacher') }}
                         </a>
-                        <a href="{{ route('admin.courses.index') }}"
-    class="guest-nav-link {{ request()->routeIs('admin.courses.*') ? 'active' : '' }}">
-    {{ __('Courses') }}
+                       <a href="{{ route('admin.courses.index') }}"
+    class="guest-nav-link {{ request()->routeIs('admin.courses.index') ? 'active' : '' }}">
+    
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 20l9-5-9-5-9 5 9 5zm0-8l9-5-9-5-9 5 9 5z" />
+    </svg>
+
+    {{ __('Manage Courses') }}
 </a>
+
+                        
 
                         <a href="{{ route('admin.reports') }}"
                             class="guest-nav-link {{ request()->routeIs('admin.reports') ? 'active' : '' }}">
@@ -60,10 +68,17 @@
                         </a>
                     @elseif(Auth::user()->isTeacher())
                         <!-- Teacher Navigation -->
-                        <a href="{{ route('teacher.courses.index') }}"
-    class="guest-nav-link {{ request()->routeIs('teacher.courses.*') ? 'active' : '' }}">
+                         <a href="{{ route('teacher.courses.index') }}"
+    class="guest-nav-link {{ request()->routeIs('teacher.courses.index') ? 'active' : '' }}">
+
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20 6H4m16 6H4m16 6H4" />
+    </svg>
+
     {{ __('My Courses') }}
 </a>
+
                         <a href="{{ route('teacher.assessments') }}"
                             class="guest-nav-link {{ request()->routeIs('teacher.assessments') ? 'active' : '' }}">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,9 +100,16 @@
                     @elseif(Auth::user()->isStudent())
                         <!-- Student Navigation -->
                         <a href="{{ route('student.courses.index') }}"
-    class="guest-nav-link {{ request()->routeIs('student.courses.*') ? 'active' : '' }}">
+    class="guest-nav-link {{ request()->routeIs('student.courses.index') ? 'active' : '' }}">
+
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 7h18M3 12h18M3 17h18" />
+    </svg>
+
     {{ __('My Courses') }}
 </a>
+
 
                         <a href="{{ route('student.assessments') }}"
                             class="guest-nav-link {{ request()->routeIs('student.assessments') ? 'active' : '' }}">
