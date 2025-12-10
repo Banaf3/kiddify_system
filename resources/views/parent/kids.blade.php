@@ -47,7 +47,8 @@
                                         <div class="ml-4">
                                             <h4 class="text-xl font-bold text-gray-800">{{ $kid->user->name }}</h4>
                                             <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                {{ $kid->account_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                                 {{ ucfirst($kid->account_status) }}
                                             </span>
                                         </div>

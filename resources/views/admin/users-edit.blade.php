@@ -84,6 +84,62 @@
                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
                         </div>
 
+                        <!-- Account Status (for students) -->
+                        @if ($user->role == 'student')
+                            <div class="mt-4">
+                                <x-input-label for="account_status" :value="__('Account Status')" />
+                                <select id="account_status" name="account_status"
+                                    class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                    onchange="togglePasswordField()">
+                                    <option value="inactive"
+                                        {{ old('account_status', $user->student->account_status ?? 'inactive') == 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
+                                    <option value="active"
+                                        {{ old('account_status', $user->student->account_status ?? 'inactive') == 'active' ? 'selected' : '' }}>
+                                        Active</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('account_status')" class="mt-2" />
+                            </div>
+
+                            <!-- Password field (shown when activating inactive student) -->
+                            <div class="mt-4" id="password_field"
+                                style="display: {{ old('account_status', $user->student->account_status ?? 'inactive') == 'inactive' ? 'block' : 'none' }};">
+                                <x-input-label for="student_password" :value="__('Set Password (Required to activate)')" />
+                                <x-text-input id="student_password" class="block mt-1 w-full" type="password"
+                                    name="student_password" />
+                                <x-input-error :messages="$errors->get('student_password')" class="mt-2" />
+                                <p class="text-xs text-gray-500 mt-1">Enter a password to activate this student account
+                                </p>
+                            </div>
+
+                            <script>
+                                function togglePasswordField() {
+                                    const status = document.getElementById('account_status').value;
+                                    const passwordField = document.getElementById('password_field');
+                                    const passwordInput = document.getElementById('student_password');
+
+                                    if (status === 'inactive') {
+                                        passwordField.style.display = 'block';
+                                        passwordInput.removeAttribute('required');
+                                    } else if (status === 'active') {
+                                        const currentStatus = '{{ $user->student->account_status ?? 'inactive' }}';
+                                        if (currentStatus === 'inactive') {
+                                            passwordField.style.display = 'block';
+                                            passwordInput.setAttribute('required', 'required');
+                                        } else {
+                                            passwordField.style.display = 'none';
+                                            passwordInput.removeAttribute('required');
+                                        }
+                                    }
+                                }
+
+                                // Run on page load
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    togglePasswordField();
+                                });
+                            </script>
+                        @endif
+
                         <div class="flex items-center justify-end mt-6">
                             <a href="{{ route('admin.users') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 mr-3">
