@@ -48,7 +48,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{id}', function (Illuminate\Http\Request $request, $id) {
             $user = App\Models\User::findOrFail($id);
 
-            $request->validate([
+            // Validation rules
+            $rules = [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $id,
                 'phone_number' => 'required|string|max:20',
@@ -56,7 +57,18 @@ Route::middleware('auth')->group(function () {
                 'address' => 'required|string',
                 'date_of_birth' => 'required|date',
                 'role' => 'required|in:admin,teacher,student,parent',
-            ]);
+                'account_status' => 'nullable|in:active,inactive',
+            ];
+
+            // If activating an inactive student, require password
+            if ($user->role == 'student' && $request->account_status == 'active') {
+                $student = App\Models\Student::where('user_id', $user->id)->first();
+                if ($student && $student->account_status == 'inactive') {
+                    $rules['student_password'] = 'required|string|min:8';
+                }
+            }
+
+            $request->validate($rules);
 
             $user->update([
                 'name' => $request->name,
@@ -68,6 +80,18 @@ Route::middleware('auth')->group(function () {
                 'role' => $request->role,
             ]);
 
+            // Update student account status and password if user is a student
+            if ($user->role == 'student' && $request->has('account_status')) {
+                $student = App\Models\Student::where('user_id', $user->id)->first();
+                if ($student) {
+                    // If activating from inactive status, update password
+                    if ($request->account_status == 'active' && $student->account_status == 'inactive' && $request->filled('student_password')) {
+                        $user->update(['password' => Hash::make($request->student_password)]);
+                    }
+                    $student->update(['account_status' => $request->account_status]);
+                }
+            }
+
             return redirect()->route('admin.users')->with('success', 'User updated successfully!');
         })->name('users.update');
 
@@ -78,6 +102,50 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', function () {
             return view('admin.reports');
         })->name('reports');
+
+        // Add Teacher Routes
+        Route::get('/add-teacher', function () {
+            return view('admin.add-teacher');
+        })->name('add-teacher');
+
+        Route::post('/add-teacher', function (Illuminate\Http\Request $request) {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:8',
+                'phone_number' => 'required|string|max:20',
+                'gender' => 'required|in:male,female',
+                'date_of_birth' => 'required|date',
+                'address' => 'required|string',
+                'qualification' => 'required|string|max:30',
+                'experience_years' => 'required|integer|min:0',
+                'school_branch' => 'required|string|max:20',
+            ]);
+
+            // Create user
+            $user = App\Models\User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone_number' => $request->phone_number,
+                'gender' => $request->gender,
+                'date_of_birth' => $request->date_of_birth,
+                'address' => $request->address,
+                'role' => 'teacher',
+            ]);
+
+            // Create teacher record
+            App\Models\Teacher::create([
+                'UserID' => $user->id,
+                'user_id' => $user->id,
+                'qualification' => $request->qualification,
+                'experience_years' => $request->experience_years,
+                'school_branch' => $request->school_branch,
+                'account_status' => 'active',
+            ]);
+
+            return redirect()->route('admin.add-teacher')->with('success', 'Teacher added successfully!');
+        })->name('add-teacher.store');
     });
     // ===============================
 // MODULE 2 — ADMIN ROUTES
@@ -202,10 +270,10 @@ Route::get('/sections/{section}/questions/create', [AssessmentController::class,
                 'UserID' => Auth::user()->id,
                 'school_branch' => 'Main Branch',
                 'class_name' => 'Not Assigned',
-                'account_status' => 'active',
+                'account_status' => 'inactive',
             ]);
 
-            return redirect()->route('parent.kids')->with('success', 'Kid added successfully!');
+            return redirect()->route('parent.kids')->with('success', 'Kid added successfully! Account pending admin approval.');
         })->name('store-kid');
 
         Route::get('/reports', function () {
