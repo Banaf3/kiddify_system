@@ -3,44 +3,36 @@
 namespace App\Http\Controllers\Module2;
 
 use App\Http\Controllers\Controller;
-use App\Models\Teacher;
-use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Course;
 
 class TeacherController extends Controller
 {
     // ---------------------------------------------------------
-    // TEACHER DASHBOARD (COURSES LIST)
+    // STUDENT DASHBOARD — LIST OF COURSES STUDENT IS ENROLLED IN
     // ---------------------------------------------------------
-    public function index($teacherID)
+    public function index()
     {
-        $teacher = Teacher::findOrFail($teacherID);
-        $courses = Course::where('teachersID', $teacherID)->get();
+        $student = Auth::user(); // assumes Student model is used for auth
+        $courses = $student->courses()->with('teacher')->get();
 
-        return view('module2.teacher_dashboard', compact('teacher', 'courses'));
+        return view('Module2.student_dashboard', compact('student', 'courses'));
     }
 
     // ---------------------------------------------------------
-    // VIEW STUDENTS ENROLLED IN COURSE
+    // VIEW SINGLE COURSE DETAILS
     // ---------------------------------------------------------
-    public function viewCourseStudents($courseID)
+    public function viewCourse($courseID)
     {
-        $course = Course::findOrFail($courseID);
-        $students = $course->students;
+        $student = Auth::user();
+        $course = Course::with('teacher', 'students')->findOrFail($courseID);
 
-        return view('module2.teacher_course_students', compact('course', 'students'));
-    }
+        // Ensure student is enrolled
+        if (!$course->students->contains($student->id)) {
+            abort(403, 'You are not enrolled in this course.');
+        }
 
-    // ---------------------------------------------------------
-    // VIEW TEACHER SCHEDULE (ALL COURSE SESSIONS)
-    // ---------------------------------------------------------
-    public function schedule($teacherID)
-    {
-        $teacher = Teacher::findOrFail($teacherID);
-
-        // All courses taught by the teacher
-        $courses = Course::where('teachersID', $teacherID)->get();
-
-        return view('module2.teacher_schedule', compact('teacher', 'courses'));
+        return view('Module2.student_course_detail', compact('course'));
     }
 }

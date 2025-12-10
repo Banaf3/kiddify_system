@@ -16,7 +16,7 @@ class CourseController extends Controller
     public function index()
     {
         $courses = Course::with('teacher')->get();
-        return view('module2.course_index', compact('courses'));
+        return view('Module2.course_index', compact('courses'));
     }
 
     // ---------------------------------------------------------
@@ -26,8 +26,7 @@ class CourseController extends Controller
     {
         $teachers = Teacher::all();
         $students = Student::all();
-
-        return view('module2.course_create', compact('teachers', 'students'));
+        return view('Module2.course_create', compact('teachers', 'students'));
     }
 
     // ---------------------------------------------------------
@@ -56,7 +55,8 @@ class CourseController extends Controller
 
         $course->students()->sync($request->student_ids);
 
-        return redirect()->route('courses.index')->with('success', 'Course created successfully.');
+        return redirect()->route('admin.courses.index')
+                         ->with('success', 'Course created successfully.');
     }
 
     // ---------------------------------------------------------
@@ -70,12 +70,8 @@ class CourseController extends Controller
         $selectedStudents = $course->students->pluck('studentID')->toArray();
         $selectedDays = json_decode($course->days, true);
 
-        return view('module2.course_edit', compact(
-            'course',
-            'teachers',
-            'students',
-            'selectedStudents',
-            'selectedDays'
+        return view('Module2.course_edit', compact(
+            'course', 'teachers', 'students', 'selectedStudents', 'selectedDays'
         ));
     }
 
@@ -107,7 +103,8 @@ class CourseController extends Controller
 
         $course->students()->sync($request->student_ids);
 
-        return redirect()->route('courses.index')->with('success', 'Course updated successfully.');
+        return redirect()->route('admin.courses.index')
+                         ->with('success', 'Course updated successfully.');
     }
 
     // ---------------------------------------------------------
@@ -119,7 +116,8 @@ class CourseController extends Controller
         $course->students()->detach();
         $course->delete();
 
-        return redirect()->back()->with('success', 'Course deleted.');
+        return redirect()->route('admin.courses.index')
+                         ->with('success', 'Course deleted.');
     }
 
     // ---------------------------------------------------------
@@ -130,6 +128,6 @@ class CourseController extends Controller
         $course = Course::findOrFail($id);
         $students = $course->students;
 
-        return view('module2.course_students', compact('course', 'students'));
+        return view('Module2.course_students', compact('course', 'students'));
     }
 }

@@ -147,7 +147,7 @@ Route::middleware('auth')->group(function () {
             return redirect()->route('admin.add-teacher')->with('success', 'Teacher added successfully!');
         })->name('add-teacher.store');
     });
-    // ===============================
+// ===============================
 // MODULE 2 — ADMIN ROUTES
 // ===============================
 Route::prefix('admin/module2')->group(function () {
@@ -171,10 +171,12 @@ Route::prefix('teacher/module2')->group(function () {
 // MODULE 2 — STUDENT ROUTES
 // ===============================
 Route::prefix('student/module2')->group(function () {
+    // List all courses the logged-in student is enrolled in
     Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
-    Route::get('courses/{id}', [StudentController::class, 'show'])->name('student.courses.show');
-});
 
+    // View single course details
+    Route::get('courses/{courseID}', [StudentController::class, 'viewCourse'])->name('student.courses.show');
+});
 
 
     //section route
