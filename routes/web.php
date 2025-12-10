@@ -165,11 +165,12 @@ Route::prefix('admin/module2')->group(function () {
 // ===============================
 // MODULE 2 — TEACHER ROUTES
 // ===============================
-Route::prefix('teacher/module2')->middleware('auth:teacher')->group(function() {
+Route::prefix('teacher/module2')->middleware('auth')->group(function() {
     Route::get('courses', [TeacherController::class, 'index'])->name('teacher.courses.index');
     Route::get('courses/{courseID}', [TeacherController::class, 'viewCourseStudents'])->name('teacher.courses.show');
     Route::get('schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
 });
+
 
 // ===============================
 // MODULE 2 — STUDENT ROUTES

@@ -18,9 +18,9 @@ return new class extends Migration
         $table->string('description', 50);
         $table->string('Start_time', 20);
         $table->string('end_time', 20);
-        $table->integer('days');
-        $table->string('T_name', 20);
-        $table->integer('maxStudent');
+       $table->text('days');
+        $table->string('T_name')->nullable();
+        $table->integer('maxStudent')->default(20);
         $table->unsignedBigInteger('StudentID');
         $table->timestamps();
 

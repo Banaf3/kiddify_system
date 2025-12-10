@@ -1,41 +1,38 @@
-@extends('layouts.navigation')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">📚 My Courses</h2>
+    </x-slot>
 
-@section('content')
-@section('module-content')
-<div class="module-header">
-    <h2>📚 My Courses</h2>
-</div>
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-<div class="card card-custom p-3">
-    @if($courses->isEmpty())
-        <div class="alert alert-info">You are not enrolled in any courses yet.</div>
-    @else
-    <table class="table table-hover align-middle">
-        <thead style="background: var(--admin-accent);">
-            <tr>
-                <th>Course Title</th>
-                <th>Teacher</th>
-                <th>Days</th>
-                <th>Time</th>
-                <th class="text-end">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($courses as $course)
-            <tr>
-                <td>{{ $course->Title }}</td>
-                <td>{{ $course->teacher->name ?? 'N/A' }}</td>
-                <td>{{ implode(', ', json_decode($course->days, true)) }}</td>
-                <td>{{ $course->Start_time }} - {{ $course->end_time }}</td>
-                <td class="text-end">
-                    <a href="{{ route('student.courses.show', $course->CourseID) }}" class="btn btn-sm btn-info text-white">👀 View</a>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @endif
-</div>
-@endsection
-@endsection
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-yellow-300">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Course Title</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Teacher</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Days</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Time</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($courses as $course)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $course->Title }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $course->teacher->name ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ implode(', ', json_decode($course->days, true)) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $course->Start_time }} - {{ $course->end_time }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <a href="{{ route('student.show', $course->CourseID) }}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">👁️ View</a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
+        </div>
+    </div>
+</x-app-layout>

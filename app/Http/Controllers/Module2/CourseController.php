@@ -36,11 +36,13 @@ class CourseController extends Controller
     {
         $request->validate([
             'Title' => 'required|string|max:255',
+            'description' => 'required|string',
             'teachersID' => 'required|exists:teachers,teachersID',
             'Start_time' => 'required',
             'end_time' => 'required',
-            'days' => 'required|array',
+             'days' => 'required|array|min:1',
             'student_ids' => 'required|array',
+            'maxStudent' => 'required|integer|min:1',
         ]);
 
         $course = Course::create([
@@ -50,6 +52,7 @@ class CourseController extends Controller
             'Start_time' => $request->Start_time,
             'end_time' => $request->end_time,
             'days' => json_encode($request->days),
+          
         ]);
 
         $course->students()->sync($request->student_ids);
