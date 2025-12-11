@@ -168,8 +168,10 @@ Route::prefix('admin/module2')->group(function () {
 Route::prefix('teacher/module2')->middleware('auth')->group(function() {
     Route::get('courses', [TeacherController::class, 'index'])->name('teacher.courses.index');
     Route::get('courses/{courseID}', [TeacherController::class, 'viewCourseStudents'])->name('teacher.courses.show');
+    Route::get('courses/{courseID}/assessments', [TeacherController::class, 'assessments'])->name('teacher.courses.assessments');
     Route::get('schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
 });
+
 
 
 // ===============================

@@ -25,7 +25,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ implode(', ', json_decode($course->days, true)) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $course->Start_time }} - {{ $course->end_time }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-right">
-                                <a href="{{ route('student.show', $course->CourseID) }}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">👁️ View</a>
+                                <a href="{{ route('student.show', $course->CourseID) }}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">View</a>
                             </td>
                         </tr>
                         @endforeach

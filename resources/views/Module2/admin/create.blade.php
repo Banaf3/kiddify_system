@@ -82,7 +82,14 @@
                         </div>
                     </div>
                     
-
+<div class="mb-4">
+    <label class="block font-medium text-gray-700">Max Students</label>
+    <input type="number" name="maxStudent" value="{{ old('maxStudent', 10) }}"
+           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" min="1">
+    @error('maxStudent')
+        <span class="text-red-500 text-sm">{{ $message }}</span>
+    @enderror
+</div>
                     <!-- Students Select with Checkboxes (Tom Select) -->
                     <div class="mb-4">
                         <label class="block font-medium text-gray-700">Assign Students</label>

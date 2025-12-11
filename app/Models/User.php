@@ -63,9 +63,10 @@ class User extends Authenticatable
      * Check if user is a teacher
      */
     public function isTeacher(): bool
-    {
-        return $this->role === 'teacher';
-    }
+{
+    return $this->role === 'teacher';
+}
+
 
     /**
      * Check if user is a student
@@ -89,5 +90,9 @@ class User extends Authenticatable
     public function student()
     {
         return $this->hasOne(Student::class, 'user_id');
+    }
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'user_id');
     }
 }

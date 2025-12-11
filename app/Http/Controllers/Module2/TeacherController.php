@@ -9,64 +9,96 @@ use App\Models\Course;
 class TeacherController extends Controller
 {
     /**
-     * -----------------------------
      * TEACHER DASHBOARD — LIST COURSES
-     * -----------------------------
      */
     public function index()
     {
-        $teacher = Auth::guard('teacher')->user(); 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-        if (!$teacher) {
+        if (!$user || !$user->isTeacher()) {
             abort(403, 'Unauthorized access.');
         }
 
-        // Get all courses taught by this teacher
-        $courses = Course::where('teachersID', $teacher->teachersID)->get();
+        $teacher = $user->teacher;
+
+        if (!$teacher) {
+            abort(403, 'Teacher profile not found.');
+        }
+
+        $courses = $teacher->courses()->with('students')->get();
 
         return view('Module2.teacher.index', compact('teacher', 'courses'));
     }
 
     /**
-     * -----------------------------
-     * VIEW STUDENTS ENROLLED IN COURSE
-     * -----------------------------
+     * VIEW STUDENTS ENROLLED IN A COURSE
      */
     public function viewCourseStudents($courseID)
     {
-        $teacher = Auth::guard('teacher')->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-        if (!$teacher) {
+        if (!$user || !$user->isTeacher()) {
             abort(403, 'Unauthorized access.');
         }
 
-        $course = Course::findOrFail($courseID);
+        $teacher = $user->teacher;
 
-        // Ensure teacher only accesses their own course
-        if ($course->teachersID !== $teacher->teachersID) {
-            abort(403, 'You do not teach this course.');
+        if (!$teacher) {
+            abort(403, 'Teacher profile not found.');
         }
 
-        $students = $course->students;
+        $course = $teacher->courses()->with('students')->findOrFail($courseID);
 
-        return view('Module2.teacher.show', compact('course', 'students'));
+        return view('Module2.teacher.show', [
+            'course' => $course,
+            'students' => $course->students
+        ]);
     }
 
     /**
-     * -----------------------------
      * VIEW TEACHER SCHEDULE
-     * -----------------------------
      */
     public function schedule()
     {
-        $teacher = Auth::guard('teacher')->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-        if (!$teacher) {
+        if (!$user || !$user->isTeacher()) {
             abort(403, 'Unauthorized access.');
         }
 
-        $courses = Course::where('teachersID', $teacher->teachersID)->get();
+        $teacher = $user->teacher;
+
+        if (!$teacher) {
+            abort(403, 'Teacher profile not found.');
+        }
+
+        $courses = $teacher->courses()->with('students')->get();
 
         return view('Module2.teacher.schedule', compact('teacher', 'courses'));
     }
+
+    public function assessments($courseID)
+{
+     /** @var \App\Models\User $user */
+     $user = Auth::user();
+    if (!$user || !$user->isTeacher()) {
+        abort(403, 'Unauthorized access.');
+    }
+
+    $teacher = $user->teacher;
+    if (!$teacher) {
+        abort(403, 'Teacher profile not found.');
+    }
+
+    $course = $teacher->courses()->findOrFail($courseID);
+
+    // Fetch assessments here if you have them
+    $assessments = $course->assessments ?? [];
+
+    return view('Module2.teacher.assessments', compact('course', 'assessments'));
+}
+
 }
