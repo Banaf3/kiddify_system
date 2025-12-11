@@ -6,6 +6,14 @@
     <div class="py-6">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-6">
+
+                <!-- Error message (auto hide) -->
+                @error('schedule')
+                    <div id="error-alert" class="mb-4 p-3 bg-red-100 text-red-700 rounded transition-opacity duration-700">
+                        {{ $message }}
+                    </div>
+                @enderror
+
                 <form action="{{ route('admin.courses.update', $course->CourseID) }}" method="POST">
                     @csrf
                     @method('PUT')
@@ -23,7 +31,8 @@
                     <!-- Course Description -->
                     <div class="mb-4">
                         <label class="block font-medium text-gray-700">Course Description</label>
-                        <textarea name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('description', $course->description) }}</textarea>
+                        <textarea name="description" rows="3"
+                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('description', $course->description) }}</textarea>
                         @error('description')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -64,7 +73,7 @@
                         @enderror
                     </div>
 
-                    <!-- Start and End Time -->
+                    <!-- Start & End Times -->
                     <div class="mb-4 flex gap-4">
                         <div class="flex-1">
                             <label class="block font-medium text-gray-700">Start Time</label>
@@ -84,10 +93,10 @@
                         </div>
                     </div>
 
-                    <!-- Students Select with Tom Select -->
+                    <!-- Assign Students -->
                     <div class="mb-4">
                         <label class="block font-medium text-gray-700">Assign Students</label>
-                        <select id="students-select" name="student_ids[]" multiple 
+                        <select id="students-select" name="student_ids[]" multiple
                                 class="mt-1 block w-full border-gray-300 rounded-md">
                             @foreach($students as $student)
                                 <option value="{{ $student->studentID }}" 
@@ -103,9 +112,9 @@
 
                     <!-- Buttons -->
                     <div class="flex justify-end gap-2">
-                        <a href="{{ route('admin.courses.index') }}" 
+                        <a href="{{ route('admin.courses.index') }}"
                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</a>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Update</button>
                     </div>
                 </form>
@@ -123,6 +132,21 @@
             placeholder: "Select students...",
             maxItems: null
         });
+
+        // Auto-hide error message
+        document.addEventListener("DOMContentLoaded", function () {
+            const alertBox = document.getElementById("error-alert");
+            if (alertBox) {
+                setTimeout(() => {
+                    alertBox.style.opacity = "0";
+                }, 3000); // disappear after 3s
+
+                setTimeout(() => {
+                    alertBox.style.display = "none";
+                }, 3700); // fully remove after fade
+            }
+        });
     </script>
 
 </x-app-layout>
+

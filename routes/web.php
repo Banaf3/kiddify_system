@@ -177,10 +177,12 @@ Route::prefix('teacher/module2')->middleware('auth')->group(function() {
 // ===============================
 // MODULE 2 — STUDENT ROUTES
 // ===============================
-Route::prefix('student/module2')->middleware('auth:student')->group(function () {
+Route::prefix('student/module2')->middleware('auth')->group(function () {
     Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
     Route::get('courses/{courseID}', [StudentController::class, 'viewCourse'])->name('student.courses.show');
+    Route::get('timetable', [StudentController::class, 'timetable'])->name('student.courses.timetable');
 });
+
 
 
 

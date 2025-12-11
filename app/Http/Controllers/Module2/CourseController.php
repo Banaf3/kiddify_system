@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Teacher;
 use App\Models\Student;
+use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
@@ -35,15 +36,28 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-             'Title' => 'required|string|max:255',
-    'description' => 'required|string',
-    'teachersID' => 'required|exists:teachers,teachersID',
-    'Start_time' => 'required',
-    'end_time' => 'required',
-    'days' => 'required|array|min:1',
-    'student_ids' => 'required|array',
-    'maxStudent' => 'nullable|integer|min:1',
+            'Title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'teachersID' => 'required|exists:teachers,teachersID',
+            'Start_time' => 'required',
+            'end_time' => 'required|after:Start_time',
+            'days' => 'required|array|min:1',
+            'student_ids' => 'required|array',
+            'maxStudent' => 'nullable|integer|min:1',
         ]);
+
+        // Check for schedule conflicts
+        $conflict = $this->checkScheduleConflict(
+            $request->teachersID,
+            $request->student_ids,
+            $request->days,
+            $request->Start_time,
+            $request->end_time
+        );
+
+        if ($conflict !== true) {
+            return redirect()->back()->withInput()->withErrors(['schedule' => $conflict]);
+        }
 
         $course = Course::create([
             'Title' => $request->Title,
@@ -52,7 +66,7 @@ class CourseController extends Controller
             'Start_time' => $request->Start_time,
             'end_time' => $request->end_time,
             'days' => json_encode($request->days),
-          
+            'maxStudent' => $request->maxStudent ?? 15,
         ]);
 
         $course->students()->sync($request->student_ids);
@@ -86,12 +100,25 @@ class CourseController extends Controller
             'Title' => 'required|string|max:255',
             'teachersID' => 'required|exists:teachers,teachersID',
             'Start_time' => 'required',
-            'end_time' => 'required',
+            'end_time' => 'required|after:Start_time',
             'days' => 'required|array',
             'student_ids' => 'required|array',
             'maxStudent' => 'nullable|integer|min:1',
-            
         ]);
+
+        // Check for schedule conflicts
+        $conflict = $this->checkScheduleConflict(
+            $request->teachersID,
+            $request->student_ids,
+            $request->days,
+            $request->Start_time,
+            $request->end_time,
+            $id // pass current course ID to exclude itself
+        );
+
+        if ($conflict !== true) {
+            return redirect()->back()->withInput()->withErrors(['schedule' => $conflict]);
+        }
 
         $course = Course::findOrFail($id);
 
@@ -133,5 +160,57 @@ class CourseController extends Controller
         $students = $course->students;
 
         return view('Module2.admin.students', compact('course', 'students'));
+    }
+
+    // -----------------------------
+    // CHECK FOR SCHEDULE CONFLICT
+    // -----------------------------
+    private function checkScheduleConflict($teacherID, $studentIDs, $days, $startTime, $endTime, $excludeCourseID = null)
+    {
+        $conflictMessage = null;
+
+        // Teacher conflict
+        $teacherCourses = Course::where('teachersID', $teacherID)
+            ->when($excludeCourseID, fn($q) => $q->where('CourseID', '!=', $excludeCourseID))
+            ->get();
+
+        foreach ($teacherCourses as $course) {
+            $courseDays = json_decode($course->days, true);
+            foreach ($days as $day) {
+                if (in_array($day, $courseDays)) {
+                    if ($this->timeOverlap($startTime, $endTime, $course->Start_time, $course->end_time)) {
+                        return "Teacher has another course on $day from {$course->Start_time} to {$course->end_time}";
+                    }
+                }
+            }
+        }
+
+        // Student conflict
+        foreach ($studentIDs as $studentID) {
+            $studentCourses = Student::find($studentID)->courses()
+                ->when($excludeCourseID, fn($q) => $q->where('CourseID', '!=', $excludeCourseID))
+                ->get();
+
+            foreach ($studentCourses as $course) {
+                $courseDays = json_decode($course->days, true);
+                foreach ($days as $day) {
+                    if (in_array($day, $courseDays)) {
+                        if ($this->timeOverlap($startTime, $endTime, $course->Start_time, $course->end_time)) {
+                            return "Student ID $studentID has a conflict on $day from {$course->Start_time} to {$course->end_time}";
+                        }
+                    }
+                }
+            }
+        }
+
+        return true; // no conflicts
+    }
+
+    // -----------------------------
+    // CHECK IF TIME OVERLAPS
+    // -----------------------------
+    private function timeOverlap($start1, $end1, $start2, $end2)
+    {
+        return !($end1 <= $start2 || $start1 >= $end2);
     }
 }

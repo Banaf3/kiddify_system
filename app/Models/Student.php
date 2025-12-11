@@ -46,8 +46,8 @@ class Student extends Model
         return $this->belongsToMany(
             Course::class,
             'course_student',
-            'studentID',
-            'courseID'
+            'student_id',
+            'course_id'
         );
     }
 }

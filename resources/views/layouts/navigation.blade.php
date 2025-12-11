@@ -99,16 +99,16 @@
                         </a>
                     @elseif(Auth::user()->isStudent())
                         <!-- Student Navigation -->
-                        <a href="{{ route('student.courses.index') }}"
-    class="guest-nav-link {{ request()->routeIs('student.courses.index') ? 'active' : '' }}">
-
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 7h18M3 12h18M3 17h18" />
-    </svg>
-
-    {{ __('My Courses') }}
-</a>
+                       <a href="{{ route('student.courses.index') }}"
+                            class="guest-nav-link {{ request()->routeIs('student.courses.index') ? 'active' : '' }}">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                   d="M3 7h18M3 12h18M3 17h18">
+                                </path>
+                            </svg>
+                            {{ __('My Courses') }}
+                        </a>
+ 
 
 
                         <a href="{{ route('student.assessments') }}"
