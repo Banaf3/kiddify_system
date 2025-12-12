@@ -7,12 +7,14 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-6">
 
-                <!-- Display schedule conflict error -->
-                @error('schedule')
-                    <div class="error-message mb-4 p-3 bg-red-100 text-red-700 rounded">
-                        {{ $message }}
-                    </div>
-                @enderror
+                <!-- Display all validation errors (including max student error) -->
+                @if($errors->any())
+                    @foreach ($errors->all() as $error)
+                        <div class="error-message mb-4 p-3 bg-red-100 text-red-700 rounded">
+                            {{ $error }}
+                        </div>
+                    @endforeach
+                @endif
 
                 <form action="{{ route('admin.courses.store') }}" method="POST">
                     @csrf
@@ -22,10 +24,6 @@
                         <label class="block font-medium text-gray-700">Course Title</label>
                         <input type="text" name="Title" value="{{ old('Title') }}"
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-
-                        @error('Title')
-                            <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <!-- Course Description -->
@@ -33,10 +31,6 @@
                         <label class="block font-medium text-gray-700">Course Description</label>
                         <textarea name="description" rows="3" 
                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('description') }}</textarea>
-
-                        @error('description')
-                            <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <!-- Teacher Dropdown -->
@@ -51,10 +45,6 @@
                                 </option>
                             @endforeach
                         </select>
-
-                        @error('teachersID')
-                            <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <!-- Days Checkboxes -->
@@ -70,10 +60,6 @@
                                 </label>
                             @endforeach
                         </div>
-
-                        @error('days')
-                            <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <!-- Start and End Time -->
@@ -82,32 +68,13 @@
                             <label class="block font-medium text-gray-700">Start Time</label>
                             <input type="time" name="Start_time" value="{{ old('Start_time') }}"
                                    class="mt-1 block w-full border-gray-300 rounded-md">
-
-                            @error('Start_time')
-                                <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                            @enderror
                         </div>
 
                         <div class="flex-1">
                             <label class="block font-medium text-gray-700">End Time</label>
                             <input type="time" name="end_time" value="{{ old('end_time') }}"
                                    class="mt-1 block w-full border-gray-300 rounded-md">
-
-                            @error('end_time')
-                                <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                            @enderror
                         </div>
-                    </div>
-
-                    <!-- Max Students -->
-                    <div class="mb-4">
-                        <label class="block font-medium text-gray-700">Max Students</label>
-                        <input type="number" name="maxStudent" value="{{ old('maxStudent', 10) }}"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" min="1">
-
-                        @error('maxStudent')
-                            <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                        @enderror
                     </div>
 
                     <!-- Assign Students -->
@@ -122,17 +89,13 @@
                                 </option>
                             @endforeach
                         </select>
-
-                        @error('student_ids')
-                            <div class="error-message text-red-500 text-sm">{{ $message }}</div>
-                        @enderror
+                        <small class="text-gray-500 text-sm">Maximum 3 students allowed</small>
                     </div>
 
                     <!-- Buttons -->
                     <div class="flex justify-end gap-2">
                         <a href="{{ route('admin.courses.index') }}"
                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</a>
-
                         <button type="submit"
                                 class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Save</button>
                     </div>
@@ -147,29 +110,24 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
     <script>
+        // Initialize Tom Select
         new TomSelect("#students-select", {
             plugins: ['checkbox_options'],
             placeholder: "Select students...",
             maxItems: null
         });
 
-        // AUTO-HIDE ERROR MESSAGES
+        // AUTO-HIDE ERROR MESSAGES after 3 seconds
         document.addEventListener("DOMContentLoaded", () => {
             const errors = document.querySelectorAll(".error-message");
-
-            setTimeout(() => {
-                errors.forEach(el => {
+            errors.forEach(el => {
+                setTimeout(() => {
                     el.style.transition = "opacity 0.5s ease";
                     el.style.opacity = "0";
-
-                    setTimeout(() => el.remove(), 600); // Remove after fade-out
-                });
-            }, 3000); // 3 seconds
+                    setTimeout(() => el.remove(), 500);
+                }, 3000);
+            });
         });
     </script>
-
 </x-app-layout>
-
-
-
 

@@ -15,7 +15,7 @@
                 <div class="mb-4 text-right">
                     <a href="{{ route('student.courses.timetable') }}" 
                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                        🗓️ View Timetable
+                        View Timetable
                     </a>
                 </div>
 
@@ -23,7 +23,6 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($courses as $course)
                         <div class="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                            <img src="{{ $course->image_url ?? '/images/default-course.jpg' }}" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h3 class="font-semibold text-lg">{{ $course->Title }}</h3>
                                 <p class="text-gray-600 text-sm mt-2">{{ $course->description ?? 'No description available.' }}</p>

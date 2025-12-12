@@ -7,12 +7,14 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-6">
 
-                <!-- Error message (auto hide) -->
-                @error('schedule')
-                    <div id="error-alert" class="mb-4 p-3 bg-red-100 text-red-700 rounded transition-opacity duration-700">
-                        {{ $message }}
-                    </div>
-                @enderror
+                <!-- Display schedule conflict or max student error -->
+                @if($errors->any())
+                    @foreach ($errors->all() as $error)
+                        <div class="error-message mb-4 p-3 bg-red-100 text-red-700 rounded">
+                            {{ $error }}
+                        </div>
+                    @endforeach
+                @endif
 
                 <form action="{{ route('admin.courses.update', $course->CourseID) }}" method="POST">
                     @csrf
@@ -23,9 +25,6 @@
                         <label class="block font-medium text-gray-700">Course Title</label>
                         <input type="text" name="Title" value="{{ old('Title', $course->Title) }}" 
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        @error('Title')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
 
                     <!-- Course Description -->
@@ -33,9 +32,6 @@
                         <label class="block font-medium text-gray-700">Course Description</label>
                         <textarea name="description" rows="3"
                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('description', $course->description) }}</textarea>
-                        @error('description')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
 
                     <!-- Teacher Dropdown -->
@@ -50,9 +46,6 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('teachersID')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
 
                     <!-- Days Checkboxes -->
@@ -68,9 +61,6 @@
                                 </label>
                             @endforeach
                         </div>
-                        @error('days')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
 
                     <!-- Start & End Times -->
@@ -79,17 +69,11 @@
                             <label class="block font-medium text-gray-700">Start Time</label>
                             <input type="time" name="Start_time" value="{{ old('Start_time', $course->Start_time) }}" 
                                    class="mt-1 block w-full border-gray-300 rounded-md">
-                            @error('Start_time')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
                         </div>
                         <div class="flex-1">
                             <label class="block font-medium text-gray-700">End Time</label>
                             <input type="time" name="end_time" value="{{ old('end_time', $course->end_time) }}" 
                                    class="mt-1 block w-full border-gray-300 rounded-md">
-                            @error('end_time')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
                         </div>
                     </div>
 
@@ -105,9 +89,6 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('student_ids')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
                     </div>
 
                     <!-- Buttons -->
@@ -127,26 +108,26 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
     <script>
+        // Initialize Tom Select
         new TomSelect("#students-select", {
             plugins: ['checkbox_options'],
             placeholder: "Select students...",
             maxItems: null
         });
 
-        // Auto-hide error message
-        document.addEventListener("DOMContentLoaded", function () {
-            const alertBox = document.getElementById("error-alert");
-            if (alertBox) {
+        // AUTO-HIDE ERROR MESSAGES after 3 seconds
+        document.addEventListener("DOMContentLoaded", () => {
+            const errors = document.querySelectorAll(".error-message");
+            errors.forEach(el => {
                 setTimeout(() => {
-                    alertBox.style.opacity = "0";
-                }, 3000); // disappear after 3s
-
-                setTimeout(() => {
-                    alertBox.style.display = "none";
-                }, 3700); // fully remove after fade
-            }
+                    el.style.transition = "opacity 0.5s ease";
+                    el.style.opacity = "0";
+                    setTimeout(() => el.remove(), 500); // remove after fade
+                }, 3000); // 3 seconds
+            });
         });
     </script>
-
 </x-app-layout>
+
+
 

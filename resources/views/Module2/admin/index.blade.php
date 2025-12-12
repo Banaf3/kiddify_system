@@ -56,13 +56,13 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ $course->students->count() }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
                                 <a href="{{ route('admin.courses.edit', $course->CourseID) }}" 
-                                   class="px-2 py-1 bg-green-500 text-black rounded hover:bg-green-600">✏️ Edit</a>
+                                   class="px-2 py-1 bg-green-500 text-black rounded hover:bg-green-600">Edit</a>
                                 <a href="{{ route('admin.courses.students', $course->CourseID) }}" 
-                                   class="px-2 py-1 bg-blue-500 text-black rounded hover:bg-blue-600">👥 Students</a>
+                                   class="px-2 py-1 bg-blue-500 text-black rounded hover:bg-blue-600">Students</a>
                                 <form action="{{ route('admin.courses.destroy', $course->CourseID) }}" method="POST" class="inline-block" onsubmit="return confirm('Warning: Are you sure you want to delete this course?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600">🗑️ Delete</button>
+                                    <button class="px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600">Delete</button>
                                 </form>
                             </td>
                         </tr>

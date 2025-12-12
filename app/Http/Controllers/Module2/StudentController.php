@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StudentController extends Controller
 {
@@ -98,5 +99,44 @@ class StudentController extends Controller
         $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
         return view('Module2.student.timetable', compact('courses', 'daysOfWeek'));
+    }
+    public function downloadTimetable()
+    {
+        $student = Auth::user()->student;
+
+        if (!$student) {
+            return back()->withErrors("Student profile not found.");
+        }
+
+        $courses = $student->courses()->with('teacher.user')->get();
+        $startHour = 7;
+        $endHour = 19;
+        $dayColumns = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+
+        $timeSlots = [];
+        for ($h = $startHour; $h < $endHour; $h++) {
+            $label = sprintf('%02d:00 - %02d:00', $h, $h+1);
+            $slotClasses = [];
+
+            foreach ($dayColumns as $day) {
+                $class = $courses->first(function($c) use ($day, $h) {
+                    $days = json_decode($c->days, true);
+                    $classHour = intval(\Carbon\Carbon::parse($c->Start_time)->format('H'));
+                    return in_array($day, $days) && $classHour == $h;
+                });
+
+                if ($class) {
+                    $slotClasses[$day] = $class;
+                }
+            }
+
+            $timeSlots[] = [
+                'label' => $label,
+                'classes' => $slotClasses
+            ];
+        }
+
+        return Pdf::loadView('Module2.student.timetablePDF', compact('dayColumns','timeSlots'))
+                  ->download('My_Timetable.pdf');
     }
 }

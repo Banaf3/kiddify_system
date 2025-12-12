@@ -181,6 +181,8 @@ Route::prefix('student/module2')->middleware('auth')->group(function () {
     Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
     Route::get('courses/{courseID}', [StudentController::class, 'viewCourse'])->name('student.courses.show');
     Route::get('timetable', [StudentController::class, 'timetable'])->name('student.courses.timetable');
+Route::get('timetable/download', [StudentController::class, 'downloadTimetable'])->name('student.timetable.download');
+
 });
 
 
