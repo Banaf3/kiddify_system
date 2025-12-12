@@ -8,7 +8,8 @@
     input[type="text"],
     input[type="email"],
     input[type="password"],
-    input[type="date"] {
+    input[type="date"],
+    select {
         @apply w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-900 transition-all duration-300;
         @apply focus:border-pink-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-pink-100;
         font-size: 15px;
@@ -18,7 +19,8 @@
     input[type="text"]:hover,
     input[type="email"]:hover,
     input[type="password"]:hover,
-    input[type="date"]:hover {
+    input[type="date"]:hover,
+    select:hover {
         @apply border-pink-300 bg-white;
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(236, 72, 153, 0.15);
@@ -27,7 +29,8 @@
     input[type="text"]:focus,
     input[type="email"]:focus,
     input[type="password"]:focus,
-    input[type="date"]:focus {
+    input[type="date"]:focus,
+    select:focus {
         transform: translateY(-2px) scale(1.01);
         box-shadow: 0 10px 30px rgba(236, 72, 153, 0.2);
     }

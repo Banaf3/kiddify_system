@@ -23,6 +23,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/profile/verify', [ProfileController::class, 'showVerify'])->name('profile.verify.show');
+    Route::post('/profile/verify', [ProfileController::class, 'verify'])->name('profile.verify');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

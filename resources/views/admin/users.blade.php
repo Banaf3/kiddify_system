@@ -93,39 +93,55 @@
                                                     {{ $user->student->account_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                                     {{ ucfirst($user->student->account_status) }}
                                                 </span>
+                                            @elseif ($user->role == 'teacher' && $user->teacher)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                    {{ $user->teacher->account_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ ucfirst($user->teacher->account_status) }}
+                                                </span>
+                                            @elseif ($user->role == 'parent' && $user->parentModel)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                    {{ $user->parentModel->account_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ ucfirst($user->parentModel->account_status) }}
+                                                </span>
                                             @else
                                                 <span class="text-gray-400 text-xs">-</span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('admin.users.edit', $user->id) }}"
-                                                class="inline-flex items-center justify-center w-12 h-12 rounded-xl mr-2 transition-all hover:scale-110"
-                                                style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">
-                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                    </path>
-                                                </svg>
-                                            </a>
-                                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST"
-                                                class="inline"
-                                                onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="inline-flex items-center justify-center w-12 h-12 rounded-xl transition-all hover:scale-110"
-                                                    style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);">
+                                            @if (auth()->check() && auth()->id() === $user->id)
+                                                <span class="text-gray-400 text-xs">-</span>
+                                            @else
+                                                <a href="{{ route('admin.users.edit', $user->id) }}"
+                                                    class="inline-flex items-center justify-center w-12 h-12 rounded-xl mr-2 transition-all hover:scale-110"
+                                                    style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                         </path>
                                                     </svg>
-                                                </button>
-                                            </form>
+                                                </a>
+                                                <form action="{{ route('admin.users.delete', $user->id) }}"
+                                                    method="POST" class="inline"
+                                                    onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="inline-flex items-center justify-center w-12 h-12 rounded-xl transition-all hover:scale-110"
+                                                        style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);">
+                                                        <svg class="w-5 h-5 text-white" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

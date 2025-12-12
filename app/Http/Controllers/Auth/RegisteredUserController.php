@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
         'phone_number' => ['required', 'string', 'max:20'],
         'gender' => ['required', 'in:male,female'],
         'address' => ['required', 'string', 'max:500'],
-        'date_of_birth' => ['required', 'date'],
+        'date_of_birth' => ['required', 'date', 'before_or_equal:2000-12-31'],
     ]);
 
     $user = User::create([
