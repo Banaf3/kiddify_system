@@ -7,7 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Section extends Model
 {
-    use HasFactory;
+    protected $fillable = ['name', 'date_time', 'image', 'CourseID'];
 
-    protected $fillable = ['name', 'date_time', 'image'];
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'CourseID', 'CourseID');
+    }
+
+    public function assessments()
+{
+    return $this->hasMany(Assessment::class, 'SectionID', 'id');
+}
+
 }

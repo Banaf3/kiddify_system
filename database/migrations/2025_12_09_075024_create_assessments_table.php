@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('assessments', function (Blueprint $table) {
             $table->id('AssessmentID');
             $table->string('question', 100);
-            $table->integer('grade');
-            $table->string('answer', 50);
+            $table->integer('grade')->default(0);
+            $table->string('optionA', 100);
+            $table->string('optionB', 100);
+            $table->string('optionC', 100);
             $table->unsignedBigInteger('CourseID');
             $table->unsignedBigInteger('SectionID'); // foreign key to sections
             $table->timestamps();

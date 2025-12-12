@@ -201,11 +201,35 @@ Route::middleware(['auth', 'can:isTeacher'])->group(function () {
     Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
 });
 
+// Show form to add question for a section
 Route::get('/sections/{section}/questions/create', [AssessmentController::class, 'create'])
     ->name('teacher.add-questions')
     ->middleware(['auth', 'can:isTeacher']);
 
+// Store new question
+Route::post('/sections/{section}/questions', [AssessmentController::class, 'store'])
+    ->name('questions.store')
+    ->middleware(['auth', 'can:isTeacher']);
 
+// Edit question
+Route::get('/questions/{assessment}/edit', [AssessmentController::class, 'edit'])
+    ->name('questions.edit')
+    ->middleware(['auth', 'can:isTeacher']);
+
+// Update question
+Route::put('/questions/{assessment}', [AssessmentController::class, 'update'])
+    ->name('questions.update')
+    ->middleware(['auth', 'can:isTeacher']);
+
+// Delete question
+Route::delete('/questions/{assessment}', [AssessmentController::class, 'destroy'])
+    ->name('questions.destroy')
+    ->middleware(['auth', 'can:isTeacher']);
+
+// Show sections for a specific course
+Route::get('/courses/{course}/sections', [SectionController::class, 'showSections'])
+    ->name('teacher.course.sections')
+    ->middleware(['auth', 'can:isTeacher']);
 
 
 
