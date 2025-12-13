@@ -5,7 +5,7 @@
 
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <a href="{{ route('admin.courses.index') }}" class="inline-block mb-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Back</a>
+            <a href="{{ route('admin.courses.index') }}" class="inline-block mb-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 no-underline">Back</a>
 
             <div class="bg-white shadow-md rounded-lg overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">

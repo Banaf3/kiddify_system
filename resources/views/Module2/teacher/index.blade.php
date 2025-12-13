@@ -39,7 +39,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $course->students->count() }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right space-x-2">
                                     <a href="{{ route('teacher.courses.show', $course->CourseID) }}" 
-                                       class="px-2 py-1 bg-blue-500 text-black rounded hover:bg-blue-600">
+                                       class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 no-underline" >
                                        View Students
                                     </a>
                                    

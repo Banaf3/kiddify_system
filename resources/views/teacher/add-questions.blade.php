@@ -14,77 +14,127 @@
         </button>
 
         {{-- 🔥 Hidden Add Form --}}
-        <div id="questionForm"
-             class="hidden bg-white p-6 rounded shadow space-y-4 border border-gray-200">
+       {{-- 🔥 Hidden Add Form --}}
+<div id="questionForm"
+     class="hidden bg-white p-4 rounded shadow border border-gray-200">
 
-            <h3 class="text-lg font-semibold mb-2">Add New Question</h3>
+    <h3 class="text-lg font-semibold mb-3">Add New Question</h3>
 
-            <form method="POST" action="{{ route('questions.store', $section->id) }}">
+    <form method="POST"
+          action="{{ route('questions.store', $section->id) }}"
+          enctype="multipart/form-data"
+          class="space-y-2">
+        @csrf
+
+        <div>
+            <label class="block text-sm font-medium mb-1">
+                Assessment Image (Optional)
+            </label>
+            <input type="file"
+                   name="image"
+                   class="block w-full border rounded p-2">
+        </div>
+
+
+        <input name="question"
+               class="w-full border rounded p-2"
+               placeholder="Question"
+               required>
+
+        <input name="optionA"
+               class="w-full border rounded p-2"
+               placeholder="Option A"
+               required>
+
+        <input name="optionB"
+               class="w-full border rounded p-2"
+               placeholder="Option B"
+               required>
+
+        <input name="optionC"
+               class="w-full border rounded p-2"
+               placeholder="Option C"
+               required>
+
+        <select name="correct_answer"
+                class="w-full border rounded p-2"
+                required>
+            <option value="">Correct Answer</option>
+            <option value="A">Option A</option>
+            <option value="B">Option B</option>
+            <option value="C">Option C</option>
+        </select>
+
+        
+        <input name="grade"
+               type="number"
+               min="0"
+               class="w-full border rounded p-2"
+               placeholder="Grade / Points"
+               required>
+
+        <button class="bg-blue-500 text-white px-4 py-2 rounded w-full">
+            Add Question
+        </button>
+    </form>
+</div>
+
+
+        {{-- 🔥 QUESTIONS LIST --}}
+@foreach($questions as $q)
+    <div class="bg-white p-4 rounded shadow">
+           {{-- 🖼️ Question Image (Optional) --}}
+       @if($q->image)
+    <div class="mb-4 flex justify-center">
+        <img src="{{ asset('storage/' . $q->image) }}"
+             alt="Question Image"
+             class="w-[600px] h-[400px] object-contain rounded-lg border">
+    </div>
+@endif
+
+
+        {{-- 🔢 Question Number --}}
+        <p class="font-bold text-lg mb-1">
+            {{ $loop->iteration }}. {{ $q->question }}
+        </p>
+          
+        <ul class="text-sm text-gray-600 mb-2">
+            <li>A. {{ $q->optionA }}</li>
+            <li>B. {{ $q->optionB }}</li>
+            <li>C. {{ $q->optionC }}</li>
+        </ul>
+
+      
+
+        {{-- ✅ Correct Answer & Grade --}}
+        <p class="flex justify-between text-green-600 mt-1">
+            <span>
+                Correct Answer: {{ $q->correct_answer }}
+            </span>
+
+            <span>
+                Grade: {{ $q->grade }}
+            </span>
+        </p>
+
+        {{-- Edit and Delete Buttons --}}
+        <div class="mt-3 flex gap-2">
+            <a href="{{ route('questions.edit', ['assessment' => $q->AssessmentID]) }}"
+               class="px-3 py-1 bg-black text-white rounded no-underline">
+                Edit
+            </a>
+
+            <form method="POST" action="{{ route('questions.destroy', $q->AssessmentID) }}">
                 @csrf
-
-                <input name="question" class="w-full border rounded p-2"
-                    placeholder="Question" required>
-
-                <input name="optionA" class="w-full border rounded p-2"
-                    placeholder="Option A" required>
-
-                <input name="optionB" class="w-full border rounded p-2"
-                    placeholder="Option B" required>
-
-                <input name="optionC" class="w-full border rounded p-2"
-                    placeholder="Option C" required>
-
-                <select name="correct_answer" class="w-full border rounded p-2" required>
-                    <option value="">Correct Answer</option>
-                    <option value="A">Option A</option>
-                    <option value="B">Option B</option>
-                    <option value="C">Option C</option>
-                </select>
-
-                <input name="grade" type="number" min="0"
-                    class="w-full border rounded p-2"
-                    placeholder="Grade/Points" required>
-
-                <button class="bg-blue-500 text-white px-4 py-2 rounded w-full">
-                    Add Question
+                @method('DELETE')
+                <button type="button" class="delete-btn px-3 py-1 bg-red-500 text-white rounded">
+                    Delete
                 </button>
             </form>
         </div>
 
-        {{-- 🔥 QUESTIONS LIST --}}
-        @foreach($questions as $q)
-            <div class="bg-white p-4 rounded shadow">
-                 {{-- 🔢 Question Number --}}
-        <p class="font-bold text-lg mb-1">
-            {{ $loop->iteration }}. {{ $q->question }}
-        </p>
-
-                <ul class="text-sm text-gray-600">
-                    <li>A. {{ $q->option_a }}</li>
-                    <li>B. {{ $q->option_b }}</li>
-                    <li>C. {{ $q->option_c }}</li>
-                </ul>
-
-                <p class="text-green-600 mt-1">
-                    Correct Answer: {{ $q->correct_answer }}
-                </p>
-
-                <div class="mt-3 flex gap-2">
-                    <a href="{{ route('questions.edit', ['assessment' => $q->AssessmentID]) }}"
-                       class="px-3 py-1 bg-black text-white rounded  no-underline">
-                        Edit
-                    </a>
-
-                    <form method="POST" action="{{ route('questions.destroy', $q->AssessmentID) }}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" class="delete-btn px-3 py-1 bg-red-500 text-white rounded">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-        @endforeach
+    </div>
+@endforeach
 
     </div>
 

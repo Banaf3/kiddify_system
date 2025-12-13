@@ -233,6 +233,24 @@ Route::get('/courses/{course}/sections', [SectionController::class, 'showSection
     ->name('teacher.course.sections')
     ->middleware(['auth', 'can:isTeacher']);
 
+//dsipaly questions for students 
+// Show assessments for a course
+Route::get('/student/courses/{course}/assessments', [AssessmentController::class, 'showAssessments'])
+    ->name('student.courses.assessments');
+
+    // Show sections for a course
+Route::get('/student/courses/{course}/sections', [AssessmentController::class, 'showSections'])
+    ->name('student.courses.sections');
+
+// Show questions for a specific section
+Route::get('/student/sections/{section}/questions', [AssessmentController::class, 'showQuestions'])
+    ->name('student.sections.questions');
+
+// Submit answers (POST)
+Route::post('/student/sections/{section}/questions/submit', [AssessmentController::class, 'submitAnswers'])
+    ->name('student.sections.questions.submit');
+
+
 
 
 

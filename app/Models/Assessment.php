@@ -18,7 +18,8 @@ class Assessment extends Model
         'optionC',
         'CourseID',
         'SectionID',
-        'correct_answer'
+        'correct_answer',
+        'image'
     ];
 
     // Relation to Course

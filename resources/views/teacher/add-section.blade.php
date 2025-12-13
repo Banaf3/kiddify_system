@@ -7,16 +7,14 @@
 
     <div class="py-6 max-w-4xl mx-auto" x-data="{ showForm: false }">
 
-    {{-- Toggle Button --}}
-    <div class="flex justify-end mb-4">
-        <button 
-            @click="showForm = !showForm" 
-            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            + Add Assessments
-        </button>
-    </div>
-
-     
+        {{-- Toggle Button --}}
+        <div class="flex justify-end mb-4">
+            <button 
+                @click="showForm = !showForm" 
+                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                + Add Assessments
+            </button>
+        </div>
 
         {{-- Add Section Form --}}
         <div x-show="showForm" class="mb-6 p-4 border rounded-lg shadow-sm bg-white" x-transition>
@@ -28,8 +26,8 @@
                     <input type="text" name="section_name" required
                         class="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
                 </div>
-                <input type="hidden" name="course_id" value="{{ $course->CourseID }}">
 
+                <input type="hidden" name="course_id" value="{{ $course->CourseID }}">
 
                 <div>
                     <label class="block font-medium text-gray-700">Date & Time</label>
@@ -40,9 +38,15 @@
                 <div>
                     <label class="block font-medium text-gray-700">Duration (minutes)</label>
                     <input type="number" name="duration" min="1" value="60" required
-                      class="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                        class="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
                 </div>
 
+                <div>
+                    <label class="block font-medium text-gray-700">Number of Attempts</label>
+                    <input type="number" name="attempt_limit" min="1" value="1" required
+                        class="mt-1 w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    <p class="text-gray-500 text-sm mt-1">Set how many times a student can attempt this assessment.</p>
+                </div>
 
                 <div>
                     <label class="block font-medium text-gray-700">Image</label>
@@ -73,32 +77,34 @@
                         <p class="text-gray-500 text-sm">
                             {{ \Carbon\Carbon::parse($section->date_time)->format('d M Y, h:i A') }}
                         </p>
+                        <p class="text-gray-500 text-xs mt-1">
+                            <strong>Duration:</strong> {{ $section->duration ?? 'N/A' }} mins
+                            | <strong>Attempts Allowed:</strong> {{ $section->attempt_limit }}
+                        </p>
 
                         {{-- Action Buttons --}}
-<div class="mt-3 space-x-2">
-    <a href="{{ route('sections.edit', $section->id) }}"
-        class="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 no-underline">
-        Edit
-    </a>
+                        <div class="mt-3 space-x-2">
+                            <a href="{{ route('sections.edit', $section->id) }}"
+                                class="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 no-underline">
+                                Edit
+                            </a>
 
-    <a href="{{ route('teacher.add-questions', ['section' => $section->id, 'course' => $course->CourseID]) }}"
-   class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 no-underline">
-    Add Questions
-</a>
+                            <a href="{{ route('teacher.add-questions', ['section' => $section->id, 'course' => $course->CourseID]) }}"
+                               class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 no-underline">
+                                Add Questions
+                            </a>
 
-
-    <form action="{{ route('sections.destroy', $section->id) }}"
-          method="POST"
-          class="inline-block delete-form">
-        @csrf
-        @method('DELETE')
-        <button type="button"
-            class="delete-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-            Delete
-        </button>
-    </form>
-</div>
-
+                            <form action="{{ route('sections.destroy', $section->id) }}"
+                                  method="POST"
+                                  class="inline-block delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button"
+                                    class="delete-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
 
                     </div>
                 </div>

@@ -271,9 +271,6 @@
                     {{ __('My Courses') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('student.assessments')" :active="request()->routeIs('student.assessments')">
-                    {{ __('Assessments') }}
-                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student.results')" :active="request()->routeIs('student.results')">
                     {{ __('My Results') }}
                 </x-responsive-nav-link>

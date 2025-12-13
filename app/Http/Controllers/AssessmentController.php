@@ -5,6 +5,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Assessment;
 use App\Models\Section;
+use App\Models\Course;
+
 
 class AssessmentController extends Controller
 {
@@ -18,38 +20,40 @@ public function create(Section $section)
 }
 
 
-    // Store a new question
-  
-public function store(Request $request, Section $section)
+   public function store(Request $request, Section $section)
 {
-    $request->validate([
+    $validated = $request->validate([
         'question' => 'required|string|max:255',
         'optionA' => 'required|string|max:255',
         'optionB' => 'required|string|max:255',
         'optionC' => 'required|string|max:255',
         'correct_answer' => 'required|string|in:A,B,C',
         'grade' => 'required|integer|min:0',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
     ]);
 
-    try {
-        Assessment::create([
-            'question' => $request->question,
-            'optionA' => $request->optionA,
-            'optionB' => $request->optionB,
-            'optionC' => $request->optionC,
-            'correct_answer' => $request->correct_answer,
-            'grade' => $request->grade,
-            'CourseID' => $section->CourseID,
-            'SectionID' => $section->id,
-        ]);
-
-        return redirect()->route('teacher.add-questions', $section->id)
-                         ->with('success', 'Question added successfully!');
-
-    } catch(QueryException $e) {
-        return back()->withErrors(['db_error' => $e->getMessage()]);
+    // Handle optional image upload
+    if ($request->hasFile('image')) {
+        $validated['image'] = $request->file('image')->store('questions', 'public');
     }
+
+    Assessment::create([
+        'question' => $validated['question'],
+        'optionA' => $validated['optionA'],
+        'optionB' => $validated['optionB'],
+        'optionC' => $validated['optionC'],
+        'correct_answer' => $validated['correct_answer'],
+        'grade' => $validated['grade'],
+        'CourseID' => $section->CourseID,
+        'SectionID' => $section->id,
+        'image' => $validated['image'] ?? null,
+    ]);
+
+    return redirect()
+        ->route('teacher.add-questions', $section->id)
+        ->with('success', 'Question added successfully!');
 }
+
 
 
     // Show the form to edit a question
@@ -84,4 +88,64 @@ public function store(Request $request, Section $section)
         return redirect()->route('teacher.add-questions', $sectionId)
                          ->with('success', 'Question deleted successfully!');
     }
+
+// Show sections for a course
+public function showSections(Course $course)
+{
+    $sections = $course->sections()->get();
+    return view('Module3.sections', compact('course', 'sections'));
+}
+
+public function showQuestions(Section $section)
+{
+    //  Block if no attempts left
+    if (!$section->canAttempt()) {
+        return redirect()
+            ->route('student.courses.sections', $section->CourseID)
+            ->with('error', 'You have no attempts left for this assessment.');
+    }
+
+    // Deduct attempt ONCE when entering
+    $section->markAttempt();
+
+    $assessments = $section->assessments()->get();
+    $course = $section->course;
+
+    return view('Module3.questions', compact('section', 'assessments', 'course'));
+}
+
+// Handle submitted answers
+public function submitAnswers(Request $request, Section $section)
+{
+    $answers = $request->input('answers'); // [assessment_id => option]
+
+    // Calculate grade
+    $grade = 0;
+    if ($answers) {
+        foreach($answers as $id => $answer){
+            $assessment = Assessment::find($id);
+            if($assessment && $assessment->correct_answer === $answer){
+                $grade += $assessment->grade;
+            }
+        }
+    }
+
+    // Mark attempt in session
+    // Assuming markAttempt is a method on Section, but it's not defined in the model, so comment out or remove
+    // $section->markAttempt();
+
+    return redirect()->route('student.courses.sections', $section->CourseID)
+                     ->with('success', "Your answers have been submitted! Grade: $grade");
+}
+
+// Show assessments (sections) for a course
+public function showAssessments(Course $course)
+{
+    $sections = $course->sections()->get();
+    return view('student.assessments', compact('course', 'sections'));
+}
+
+
+
+
 }
