@@ -1,6 +1,16 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" id="registerForm">
         @csrf
+
+        <!-- Info message for adding additional role -->
+        @if (old('email'))
+            <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p class="text-sm text-blue-800">
+                    <strong>Note:</strong> If you already have an account with this email, enter your existing password
+                    to add a new role (Teacher or Parent) to your account.
+                </p>
+            </div>
+        @endif
 
         <!-- Name -->
         <div>
@@ -16,6 +26,7 @@
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
                 required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+
         </div>
 
         <!-- Phone Number -->
@@ -82,6 +93,7 @@
                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
+            <p class="text-xs text-gray-500 mt-1">You can register as both Teacher and Parent with the same email</p>
         </div>
 
         <div class="mt-6">

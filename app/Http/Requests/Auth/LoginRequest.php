@@ -53,6 +53,19 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Check if user has multiple roles (teacher and parent)
+     */
+    public function hasMultipleRoles(): bool
+    {
+        $user = Auth::user();
+
+        $hasTeacher = \App\Models\Teacher::where('user_id', $user->id)->exists();
+        $hasParent = \App\Models\ParentModel::where('user_id', $user->id)->exists();
+
+        return $hasTeacher && $hasParent;
+    }
+
+    /**
      * Ensure the login request is not rate limited.
      *
      * @throws \Illuminate\Validation\ValidationException

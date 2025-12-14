@@ -19,6 +19,29 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/dashboard', function () {
+    $user = Auth::user();
+    $selectedRole = session('selected_role');
+
+    // Check if user has both teacher and parent roles
+    $hasTeacher = App\Models\Teacher::where('user_id', $user->id)->exists();
+    $hasParent = App\Models\ParentModel::where('user_id', $user->id)->exists();
+
+    // If user has multiple roles and hasn't selected one yet, redirect to role selection
+    if ($hasTeacher && $hasParent && !$selectedRole) {
+        return redirect()->route('role.select');
+    }
+
+    // Redirect based on selected role or user's role
+    if ($selectedRole === 'teacher' || (!$selectedRole && $user->role === 'teacher')) {
+        return redirect()->route('teacher.courses');
+    } elseif ($selectedRole === 'parent' || (!$selectedRole && $user->role === 'parent')) {
+        return redirect()->route('parent.kids');
+    } elseif ($user->role === 'student') {
+        return redirect()->route('student.courses');
+    } elseif ($user->role === 'admin') {
+        return redirect()->route('admin.users');
+    }
+
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -233,7 +256,7 @@ Route::get('/courses/{course}/sections', [SectionController::class, 'showSection
     ->name('teacher.course.sections')
     ->middleware(['auth', 'can:isTeacher']);
 
-//dsipaly questions for students 
+//dsipaly questions for students
 // Show assessments for a course
 Route::get('/student/courses/{course}/assessments', [AssessmentController::class, 'showAssessments'])
     ->name('student.courses.assessments');

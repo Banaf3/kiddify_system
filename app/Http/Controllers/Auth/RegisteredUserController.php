@@ -29,6 +29,69 @@ class RegisteredUserController extends Controller
      */
    public function store(Request $request): RedirectResponse
 {
+    // Check if user with this email already exists
+    $existingUser = User::where('email', $request->email)->first();
+
+    if ($existingUser) {
+        // If user exists, validate password matches and we can add the new role
+        $request->validate([
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:teacher,parent'],
+        ]);
+
+        // Verify password matches
+        if (!Hash::check($request->password, $existingUser->password)) {
+            return back()->withErrors(['email' => 'Email already exists with a different password.'])->withInput();
+        }
+
+        // Check if user already has this role
+        if ($request->role === 'teacher') {
+            $hasRole = \App\Models\Teacher::where('user_id', $existingUser->id)->exists();
+            if ($hasRole) {
+                return back()->withErrors(['role' => 'You already have a teacher account with this email.'])->withInput();
+            }
+
+            // Create teacher record
+            \App\Models\Teacher::create([
+                'user_id' => $existingUser->id,
+                'UserID' => $existingUser->id,
+                'qualification' => 'Not Specified',
+                'experience_years' => 0,
+                'school_branch' => 'Main Branch',
+                'account_status' => 'active',
+            ]);
+
+            // Update user role in users table if they don't have parent role
+            if (!$existingUser->role || $existingUser->role !== 'parent') {
+                $existingUser->update(['role' => 'teacher']);
+            }
+
+            return redirect()->route('login')->with('status', 'Teacher account added successfully! Please login.');
+        }
+
+        if ($request->role === 'parent') {
+            $hasRole = \App\Models\ParentModel::where('user_id', $existingUser->id)->exists();
+            if ($hasRole) {
+                return back()->withErrors(['role' => 'You already have a parent account with this email.'])->withInput();
+            }
+
+            // Create parent record
+            \App\Models\ParentModel::create([
+                'user_id' => $existingUser->id,
+                'occupation' => 'Not Specified',
+                'account_status' => 'active',
+            ]);
+
+            // Update user role in users table to parent
+            $existingUser->update(['role' => 'parent']);
+
+            return redirect()->route('login')->with('status', 'Parent account added successfully! Please login.');
+        }
+
+        return back()->withErrors(['role' => 'You can only add teacher or parent roles to existing accounts.'])->withInput();
+    }
+
+    // New user registration - validate all fields
     $request->validate([
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],

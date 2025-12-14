@@ -64,7 +64,15 @@ class User extends Authenticatable
      */
     public function isTeacher(): bool
 {
-    return $this->role === 'teacher';
+    // Check if selected role in session is teacher
+    if (session('selected_role') === 'teacher') {
+        return true;
+    }
+    // If no selected role, check if user has teacher record
+    if (!session('selected_role')) {
+        return $this->teacher()->exists() || $this->role === 'teacher';
+    }
+    return false;
 }
 
 
@@ -81,7 +89,15 @@ class User extends Authenticatable
      */
     public function isParent(): bool
     {
-        return $this->role === 'parent';
+        // Check if selected role in session is parent
+        if (session('selected_role') === 'parent') {
+            return true;
+        }
+        // If no selected role, check if user has parent record
+        if (!session('selected_role')) {
+            return $this->parentModel()->exists() || $this->role === 'parent';
+        }
+        return false;
     }
 
     /**

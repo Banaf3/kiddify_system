@@ -28,6 +28,34 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Check if user has multiple roles
+        if ($request->hasMultipleRoles()) {
+            return redirect()->route('role.select');
+        }
+
+        return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    /**
+     * Show role selection page
+     */
+    public function showRoleSelection(): View
+    {
+        return view('auth.select-role');
+    }
+
+    /**
+     * Handle role selection
+     */
+    public function selectRole(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'role' => 'required|in:teacher,parent'
+        ]);
+
+        // Store selected role in session
+        $request->session()->put('selected_role', $request->role);
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
