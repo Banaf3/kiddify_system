@@ -23,6 +23,70 @@
                         <p class="text-gray-600 mt-1">Total Users: {{ $users->count() }}</p>
                     </div>
 
+                    <!-- Filter Form -->
+                    <form method="GET" action="{{ route('admin.users') }}" class="mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <!-- Search -->
+                            <div>
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                    placeholder="Search by name, email, phone"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+
+                            <!-- Role Filter -->
+                            <div>
+                                <select name="role"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="">All Roles</option>
+                                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin
+                                    </option>
+                                    <option value="teacher" {{ request('role') == 'teacher' ? 'selected' : '' }}>Teacher
+                                    </option>
+                                    <option value="student" {{ request('role') == 'student' ? 'selected' : '' }}>Student
+                                    </option>
+                                    <option value="parent" {{ request('role') == 'parent' ? 'selected' : '' }}>Parent
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Gender Filter -->
+                            <div>
+                                <select name="gender"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="">All Genders</option>
+                                    <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Male
+                                    </option>
+                                    <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Female
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div>
+                                <select name="status"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="">All Status</option>
+                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
+                                </select>
+                            </div>
+
+                            <!-- Filter Buttons -->
+                            <div class="flex gap-2">
+                                <button type="submit"
+                                    class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all">
+                                    Filter
+                                </button>
+                                <a href="{{ route('admin.users') }}"
+                                    class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all text-center">
+                                    Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gradient-to-r from-pink-50 to-purple-50">
@@ -74,14 +138,41 @@
                                             <div class="text-sm text-gray-900">{{ $user->phone_number }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                                @if ($user->role == 'admin') bg-red-100 text-red-800
-                                                @elseif($user->role == 'teacher') bg-blue-100 text-blue-800
-                                                @elseif($user->role == 'student') bg-green-100 text-green-800
-                                                @else bg-purple-100 text-purple-800 @endif">
-                                                {{ ucfirst($user->role) }}
-                                            </span>
+                                            <div class="flex flex-wrap gap-1">
+                                                @php
+                                                    $roles = [];
+                                                    if ($user->role == 'admin') {
+                                                        $roles[] = [
+                                                            'name' => 'Admin',
+                                                            'class' => 'bg-red-100 text-red-800',
+                                                        ];
+                                                    }
+                                                    if ($user->teacher) {
+                                                        $roles[] = [
+                                                            'name' => 'Teacher',
+                                                            'class' => 'bg-blue-100 text-blue-800',
+                                                        ];
+                                                    }
+                                                    if ($user->student) {
+                                                        $roles[] = [
+                                                            'name' => 'Student',
+                                                            'class' => 'bg-green-100 text-green-800',
+                                                        ];
+                                                    }
+                                                    if ($user->parentModel) {
+                                                        $roles[] = [
+                                                            'name' => 'Parent',
+                                                            'class' => 'bg-purple-100 text-purple-800',
+                                                        ];
+                                                    }
+                                                @endphp
+                                                @foreach ($roles as $role)
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $role['class'] }}">
+                                                        {{ $role['name'] }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {{ ucfirst($user->gender) }}

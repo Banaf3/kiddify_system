@@ -54,8 +54,46 @@ Route::middleware('auth')->group(function () {
 
     // Admin Routes
     Route::middleware('can:isAdmin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', function () {
-            $users = App\Models\User::orderBy('created_at', 'desc')->get();
+        Route::get('/users', function (Illuminate\Http\Request $request) {
+            $query = App\Models\User::query()->with(['student', 'teacher', 'parentModel']);
+
+            // Filter by role
+            if ($request->filled('role')) {
+                $query->where('role', $request->role);
+            }
+
+            // Filter by gender
+            if ($request->filled('gender')) {
+                $query->where('gender', $request->gender);
+            }
+
+            // Filter by status (for students, teachers, and parents)
+            if ($request->filled('status')) {
+                $status = $request->status;
+                $query->where(function($q) use ($status) {
+                    $q->whereHas('student', function($sq) use ($status) {
+                        $sq->where('account_status', $status);
+                    })
+                    ->orWhereHas('teacher', function($tq) use ($status) {
+                        $tq->where('account_status', $status);
+                    })
+                    ->orWhereHas('parentModel', function($pq) use ($status) {
+                        $pq->where('account_status', $status);
+                    });
+                });
+            }
+
+            // Search by name, email, or phone
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone_number', 'like', "%{$search}%");
+                });
+            }
+
+            $users = $query->orderBy('created_at', 'desc')->get();
             return view('admin.users', compact('users'));
         })->name('users');
 

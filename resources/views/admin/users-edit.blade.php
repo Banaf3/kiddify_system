@@ -56,7 +56,10 @@
                         <div class="mt-4">
                             <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
                             <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date"
-                                name="date_of_birth" :value="old('date_of_birth', $user->date_of_birth)" required max="2000-12-31"
+                                name="date_of_birth" :value="old(
+                                    'date_of_birth',
+                                    $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '',
+                                )" required max="2000-12-31"
                                 style="color-scheme: light;" />
                             <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
                         </div>
