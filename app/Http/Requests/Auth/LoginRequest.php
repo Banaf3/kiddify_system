@@ -49,6 +49,31 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Check if user account is inactive
+        $user = Auth::user();
+        $accountStatus = null;
+
+        // Check account status based on user role
+        if ($user->role === 'student') {
+            $student = \App\Models\Student::where('user_id', $user->id)->first();
+            $accountStatus = $student?->account_status;
+        } elseif ($user->role === 'teacher') {
+            $teacher = \App\Models\Teacher::where('user_id', $user->id)->first();
+            $accountStatus = $teacher?->account_status;
+        } elseif ($user->role === 'parent') {
+            $parent = \App\Models\ParentModel::where('user_id', $user->id)->first();
+            $accountStatus = $parent?->account_status;
+        }
+
+        // If account is inactive, logout and throw error
+        if ($accountStatus === 'inactive') {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Your account is inactive. Contact the school for more information.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

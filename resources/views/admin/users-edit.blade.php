@@ -59,7 +59,7 @@
                                 name="date_of_birth" :value="old(
                                     'date_of_birth',
                                     $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '',
-                                )" required max="2000-12-31"
+                                )" required max="2022-12-31"
                                 style="color-scheme: light;" />
                             <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
                         </div>

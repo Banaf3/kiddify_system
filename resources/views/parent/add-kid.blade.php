@@ -55,7 +55,7 @@
                         <div class="mt-4">
                             <x-input-label for="kid_dob" :value="__('Date of Birth')" />
                             <x-text-input id="kid_dob" class="block mt-1 w-full" type="date" name="kid_dob"
-                                :value="old('kid_dob')" required style="color-scheme: light;" />
+                                :value="old('kid_dob')" required max="2022-12-31" style="color-scheme: light;" />
                             <x-input-error :messages="$errors->get('kid_dob')" class="mt-2" />
                         </div>
 
