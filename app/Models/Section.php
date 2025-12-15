@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 // app/Models/Section.php
 class Section extends Model
 {
-    protected $fillable = ['name', 'date_time', 'image', 'CourseID', 'duration', 'attempt_limit'];
+    protected $fillable = ['name', 'date_time', 'image', 'CourseID', 'duration', 'attempt_limit', 'review_enabled', 'grade_visible'];
+
+    protected $casts = [
+        'review_enabled' => 'boolean',
+        'grade_visible' => 'boolean',
+    ];
 
     public function course()
     {

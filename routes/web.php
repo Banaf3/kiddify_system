@@ -33,13 +33,13 @@ Route::get('/dashboard', function () {
 
     // Redirect based on selected role or user's role
     if ($selectedRole === 'teacher' || (!$selectedRole && $user->role === 'teacher')) {
-        return redirect()->route('teacher.courses');
+        return app(App\Http\Controllers\Module2\TeacherController::class)->dashboard();
     } elseif ($selectedRole === 'parent' || (!$selectedRole && $user->role === 'parent')) {
-        return redirect()->route('parent.kids');
+        return app(App\Http\Controllers\ParentController::class)->dashboard();
     } elseif ($user->role === 'student') {
-        return redirect()->route('student.courses');
+        return app(App\Http\Controllers\Module2\StudentController::class)->dashboard();
     } elseif ($user->role === 'admin') {
-        return redirect()->route('admin.users');
+        return app(App\Http\Controllers\AdminController::class)->dashboard();
     }
 
     return view('dashboard');
@@ -70,26 +70,26 @@ Route::middleware('auth')->group(function () {
             // Filter by status (for students, teachers, and parents)
             if ($request->filled('status')) {
                 $status = $request->status;
-                $query->where(function($q) use ($status) {
-                    $q->whereHas('student', function($sq) use ($status) {
+                $query->where(function ($q) use ($status) {
+                    $q->whereHas('student', function ($sq) use ($status) {
                         $sq->where('account_status', $status);
                     })
-                    ->orWhereHas('teacher', function($tq) use ($status) {
-                        $tq->where('account_status', $status);
-                    })
-                    ->orWhereHas('parentModel', function($pq) use ($status) {
-                        $pq->where('account_status', $status);
-                    });
+                        ->orWhereHas('teacher', function ($tq) use ($status) {
+                            $tq->where('account_status', $status);
+                        })
+                        ->orWhereHas('parentModel', function ($pq) use ($status) {
+                            $pq->where('account_status', $status);
+                        });
                 });
             }
 
             // Search by name, email, or phone
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone_number', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone_number', 'like', "%{$search}%");
                 });
             }
 
@@ -210,106 +210,111 @@ Route::middleware('auth')->group(function () {
             return redirect()->route('admin.add-teacher')->with('success', 'Teacher added successfully!');
         })->name('add-teacher.store');
     });
-// ===============================
+    // ===============================
 // MODULE 2 — ADMIN ROUTES
 // ===============================
-Route::prefix('admin/module2')->group(function () {
-    Route::get('courses', [CourseController::class, 'index'])->name('admin.courses.index');
-    Route::get('courses/create', [CourseController::class, 'create'])->name('admin.courses.create');
-    Route::post('courses', [CourseController::class, 'store'])->name('admin.courses.store');
-    Route::get('courses/{id}/edit', [CourseController::class, 'edit'])->name('admin.courses.edit');
-    Route::put('courses/{id}', [CourseController::class, 'update'])->name('admin.courses.update');
-    Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
+    Route::prefix('admin/module2')->group(function () {
+        Route::get('courses', [CourseController::class, 'index'])->name('admin.courses.index');
+        Route::get('courses/create', [CourseController::class, 'create'])->name('admin.courses.create');
+        Route::post('courses', [CourseController::class, 'store'])->name('admin.courses.store');
+        Route::get('courses/{id}/edit', [CourseController::class, 'edit'])->name('admin.courses.edit');
+        Route::put('courses/{id}', [CourseController::class, 'update'])->name('admin.courses.update');
+        Route::delete('courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
 
-    // Optional: view enrolled students
-    Route::get('courses/{id}/students', [CourseController::class, 'viewStudents'])->name('admin.courses.students');
-});
+        // Optional: view enrolled students
+        Route::get('courses/{id}/students', [CourseController::class, 'viewStudents'])->name('admin.courses.students');
+    });
 
-// ===============================
+    // ===============================
 // MODULE 2 — TEACHER ROUTES
 // ===============================
-Route::prefix('teacher/module2')->middleware('auth')->group(function() {
-    Route::get('courses', [TeacherController::class, 'index'])->name('teacher.courses.index');
-    Route::get('courses/{courseID}', [TeacherController::class, 'viewCourseStudents'])->name('teacher.courses.show');
-    Route::get('courses/{courseID}/assessments', [TeacherController::class, 'assessments'])->name('teacher.courses.assessments');
-    Route::get('schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
-});
+    Route::prefix('teacher/module2')->middleware('auth')->group(function () {
+        Route::get('courses', [TeacherController::class, 'index'])->name('teacher.courses.index');
+        Route::get('courses/{courseID}', [TeacherController::class, 'viewCourseStudents'])->name('teacher.courses.show');
+        Route::get('courses/{courseID}/assessments', [TeacherController::class, 'assessments'])->name('teacher.courses.assessments');
+        Route::get('schedule', [TeacherController::class, 'schedule'])->name('teacher.schedule');
+    });
 
 
 
-// ===============================
+    // ===============================
 // MODULE 2 — STUDENT ROUTES
 // ===============================
-Route::prefix('student/module2')->middleware('auth')->group(function () {
-    Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
-    Route::get('courses/{courseID}', [StudentController::class, 'viewCourse'])->name('student.courses.show');
-    Route::get('timetable', [StudentController::class, 'timetable'])->name('student.courses.timetable');
-Route::get('timetable/download', [StudentController::class, 'downloadTimetable'])->name('student.timetable.download');
+    Route::prefix('student/module2')->middleware('auth')->group(function () {
+        Route::get('courses', [StudentController::class, 'index'])->name('student.courses.index');
+        Route::get('courses/{courseID}', [StudentController::class, 'viewCourse'])->name('student.courses.show');
+        Route::get('timetable', [StudentController::class, 'timetable'])->name('student.courses.timetable');
+        Route::get('timetable/download', [StudentController::class, 'downloadTimetable'])->name('student.timetable.download');
 
-});
+    });
 
 
 
 
     //section route
-Route::middleware(['auth', 'can:isTeacher'])->group(function () {
-    Route::get('/teacher/assessments', [SectionController::class, 'index'])->name('teacher.assessments');
-    Route::post('/sectionsStore', [SectionController::class, 'store'])->name('sections.store');
+    Route::middleware(['auth', 'can:isTeacher'])->group(function () {
+        Route::get('/teacher/assessments', [SectionController::class, 'index'])->name('teacher.assessments');
+        Route::post('/sectionsStore', [SectionController::class, 'store'])->name('sections.store');
 
-    // Edit & Update
-    Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
-    Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
+        // Edit & Update
+        Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
+        Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
 
-    // Delete
-    Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
-});
+        // Delete
+        Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+    });
 
-// Show form to add question for a section
-Route::get('/sections/{section}/questions/create', [AssessmentController::class, 'create'])
-    ->name('teacher.add-questions')
-    ->middleware(['auth', 'can:isTeacher']);
+    // Show form to add question for a section
+    Route::get('/sections/{section}/questions/create', [AssessmentController::class, 'create'])
+        ->name('teacher.add-questions')
+        ->middleware(['auth', 'can:isTeacher']);
 
-// Store new question
-Route::post('/sections/{section}/questions', [AssessmentController::class, 'store'])
-    ->name('questions.store')
-    ->middleware(['auth', 'can:isTeacher']);
+    // Store new question
+    Route::post('/sections/{section}/questions', [AssessmentController::class, 'store'])
+        ->name('questions.store')
+        ->middleware(['auth', 'can:isTeacher']);
 
-// Edit question
-Route::get('/questions/{assessment}/edit', [AssessmentController::class, 'edit'])
-    ->name('questions.edit')
-    ->middleware(['auth', 'can:isTeacher']);
+    // Edit question
+    Route::get('/questions/{assessment}/edit', [AssessmentController::class, 'edit'])
+        ->name('questions.edit')
+        ->middleware(['auth', 'can:isTeacher']);
 
-// Update question
-Route::put('/questions/{assessment}', [AssessmentController::class, 'update'])
-    ->name('questions.update')
-    ->middleware(['auth', 'can:isTeacher']);
+    // Update question
+    Route::put('/questions/{assessment}', [AssessmentController::class, 'update'])
+        ->name('questions.update')
+        ->middleware(['auth', 'can:isTeacher']);
 
-// Delete question
-Route::delete('/questions/{assessment}', [AssessmentController::class, 'destroy'])
-    ->name('questions.destroy')
-    ->middleware(['auth', 'can:isTeacher']);
+    // Delete question
+    Route::delete('/questions/{assessment}', [AssessmentController::class, 'destroy'])
+        ->name('questions.destroy')
+        ->middleware(['auth', 'can:isTeacher']);
 
-// Show sections for a specific course
-Route::get('/courses/{course}/sections', [SectionController::class, 'showSections'])
-    ->name('teacher.course.sections')
-    ->middleware(['auth', 'can:isTeacher']);
+    // Show sections for a specific course
+    Route::get('/courses/{course}/sections', [SectionController::class, 'showSections'])
+        ->name('teacher.course.sections')
+        ->middleware(['auth', 'can:isTeacher']);
 
-//dsipaly questions for students
+    //dsipaly questions for students
 // Show assessments for a course
-Route::get('/student/courses/{course}/assessments', [AssessmentController::class, 'showAssessments'])
-    ->name('student.courses.assessments');
+    Route::get('/student/courses/{course}/assessments', [AssessmentController::class, 'showAssessments'])
+        ->name('student.courses.assessments');
 
     // Show sections for a course
-Route::get('/student/courses/{course}/sections', [AssessmentController::class, 'showSections'])
-    ->name('student.courses.sections');
+    Route::get('/student/courses/{course}/sections', [AssessmentController::class, 'showSections'])
+        ->name('student.courses.sections');
 
-// Show questions for a specific section
-Route::get('/student/sections/{section}/questions', [AssessmentController::class, 'showQuestions'])
-    ->name('student.sections.questions');
+    // Show questions for a specific section
+    Route::get('/student/sections/{section}/questions', [AssessmentController::class, 'showQuestions'])
+        ->name('student.sections.questions');
 
-// Submit answers (POST)
-Route::post('/student/sections/{section}/questions/submit', [AssessmentController::class, 'submitAnswers'])
-    ->name('student.sections.questions.submit');
+    // Submit answers (POST)
+    Route::post('/student/sections/{section}/questions/submit', [App\Http\Controllers\ProgressController::class, 'submitAttempt'])
+        ->middleware(['auth', 'can:isStudent'])
+        ->name('student.sections.questions.submit');
+
+    Route::get('/student/sections/{section}/review/{attempt?}', [App\Http\Controllers\ProgressController::class, 'reviewAttempt'])
+        ->middleware(['auth', 'can:isStudent'])
+        ->name('student.review-attempt');
 
 
 
@@ -323,9 +328,8 @@ Route::post('/student/sections/{section}/questions/submit', [AssessmentControlle
             return view('teacher.courses');
         })->name('courses');
 
-        Route::get('/grading', function () {
-            return view('teacher.grading');
-        })->name('grading');
+        Route::get('/grading', [\App\Http\Controllers\ProgressController::class, 'teacherGrading'])->name('grading');
+        Route::get('/grade-student/{student}/{section}', [\App\Http\Controllers\ProgressController::class, 'gradeStudent'])->name('grade-student');
     });
 
     // Student Routes
@@ -334,13 +338,12 @@ Route::post('/student/sections/{section}/questions/submit', [AssessmentControlle
             return view('student.courses');
         })->name('courses');
 
-        Route::get('/assessments', function () {
-            return view('student.assessments');
-        })->name('assessments');
+        Route::get('/assessments', [\App\Http\Controllers\AssessmentController::class, 'studentDashboardAssessments'])->name('assessments');
 
-        Route::get('/results', function () {
-            return view('student.results');
-        })->name('results');
+        Route::get('/results', [\App\Http\Controllers\ProgressController::class, 'studentResults'])->name('results');
+
+        Route::get('/timetable', [App\Http\Controllers\Module2\StudentController::class, 'timetable'])->name('timetable');
+        Route::get('/timetable/download', [App\Http\Controllers\Module2\StudentController::class, 'downloadTimetable'])->name('timetable.download');
     });
 
     // Parent Routes
@@ -392,10 +395,13 @@ Route::post('/student/sections/{section}/questions/submit', [AssessmentControlle
             return redirect()->route('parent.kids')->with('success', 'Kid added successfully! Account pending admin approval.');
         })->name('store-kid');
 
-        Route::get('/reports', function () {
-            return view('parent.reports');
-        })->name('reports');
+        Route::get('/reports', [\App\Http\Controllers\ProgressController::class, 'parentReports'])->name('reports');
     });
 });
 
-require __DIR__.'/auth.php';
+// Admin Routes
+Route::middleware('can:isAdmin')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/reports', [\App\Http\Controllers\ProgressController::class, 'adminReports'])->name('reports');
+});
+require __DIR__ . '/auth.php';
+

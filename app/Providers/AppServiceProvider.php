@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use App\Models\StudentScore;
+use App\Models\Section;
+use App\Policies\ScorePolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,5 +40,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('isParent', function (User $user) {
             return $user->isParent();
         });
+
+        // Register ScorePolicy methods as gates
+        Gate::define('viewProgress', [ScorePolicy::class, 'viewProgress']);
+        Gate::define('gradeStudent', [ScorePolicy::class, 'gradeStudent']);
+        Gate::define('review', [ScorePolicy::class, 'review']);
+        Gate::define('viewGrade', [ScorePolicy::class, 'viewGrade']);
     }
 }

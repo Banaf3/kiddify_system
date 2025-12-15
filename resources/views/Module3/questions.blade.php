@@ -24,15 +24,15 @@
                     @endif
                     <div class="space-y-2">
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->id }}]" value="A" class="mr-2" required>
+                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="A" class="mr-2" required>
                             {{ $assessment->optionA }}
                         </label>
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->id }}]" value="B" class="mr-2" required>
+                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="B" class="mr-2" required>
                             {{ $assessment->optionB }}
                         </label>
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->id }}]" value="C" class="mr-2" required>
+                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="C" class="mr-2" required>
                             {{ $assessment->optionC }}
                         </label>
                     </div>

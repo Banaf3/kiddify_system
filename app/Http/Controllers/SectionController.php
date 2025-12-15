@@ -24,14 +24,15 @@ class SectionController extends Controller
 }
 
 
-// Store a new section
     public function store(Request $request)
     {
         $request->validate([
             'section_name' => 'required|string|max:50',
             'date_time' => 'required|date',
             'duration' => 'required|integer|min:1',
-            'attempt_limit' => 'required|integer|min:1', // Added validation
+            'attempt_limit' => 'required|integer|min:1',
+            'review_enabled' => 'nullable|boolean',
+            'grade_visible' => 'nullable|boolean',
             'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'course_id' => 'required|exists:courses,CourseID',
         ]);
@@ -45,7 +46,9 @@ class SectionController extends Controller
             'name' => $request->section_name,
             'date_time' => $request->date_time,
             'duration' => $request->duration,
-            'attempt_limit' => $request->attempt_limit, // Save attempt_limit
+            'attempt_limit' => $request->attempt_limit,
+            'review_enabled' => $request->has('review_enabled'),
+            'grade_visible' => $request->has('grade_visible'),
             'image' => $imageName,
             'CourseID' => $request->course_id,
         ]);
@@ -59,14 +62,15 @@ class SectionController extends Controller
         return view('teacher.edit_section', compact('section'));
     }
 
-    // Update section
     public function update(Request $request, Section $section)
     {
         $request->validate([
             'section_name' => 'required|string|max:50',
             'date_time' => 'required|date',
             'duration' => 'required|integer|min:1',
-            'attempt_limit' => 'required|integer|min:1', // Added validation
+            'attempt_limit' => 'required|integer|min:1',
+            'review_enabled' => 'nullable|boolean',
+            'grade_visible' => 'nullable|boolean',
             'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
@@ -77,7 +81,9 @@ class SectionController extends Controller
         $section->name = $request->section_name;
         $section->date_time = $request->date_time;
         $section->duration = $request->duration;
-        $section->attempt_limit = $request->attempt_limit; // Update attempt_limit
+        $section->attempt_limit = $request->attempt_limit;
+        $section->review_enabled = $request->has('review_enabled');
+        $section->grade_visible = $request->has('grade_visible');
         $section->save();
 
         return redirect()->route('teacher.assessments')->with('success', 'Section updated successfully!');

@@ -48,6 +48,18 @@
                     <p class="text-gray-500 text-sm mt-1">Set how many times a student can attempt this assessment.</p>
                 </div>
 
+                <div class="flex items-center space-x-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="review_enabled" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-700">Enable Review (students can view answers after attempt)</span>
+                    </label>
+                    
+                    <label class="flex items-center">
+                        <input type="checkbox" name="grade_visible" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-700">Show Grades (students can see their scores)</span>
+                    </label>
+                </div>
+
                 <div>
                     <label class="block font-medium text-gray-700">Image</label>
                     <input type="file" name="image" accept="image/*" class="mt-1 w-full">

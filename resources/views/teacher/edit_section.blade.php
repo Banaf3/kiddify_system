@@ -66,6 +66,27 @@
                            required>
                 </div>
 
+                {{-- Review and Grade Settings --}}
+                <div class="flex items-center space-x-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" 
+                               name="review_enabled" 
+                               value="1" 
+                               {{ old('review_enabled', $section->review_enabled) ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-700">Enable Review (students can view answers after attempt)</span>
+                    </label>
+                    
+                    <label class="flex items-center">
+                        <input type="checkbox" 
+                               name="grade_visible" 
+                               value="1" 
+                               {{ old('grade_visible', $section->grade_visible) ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-700">Show Grades (students can see their scores)</span>
+                    </label>
+                </div>
+
                 {{-- Current Image --}}
                 <div>
                     <label class="block text-gray-700 font-medium mb-1">Current Image</label>
