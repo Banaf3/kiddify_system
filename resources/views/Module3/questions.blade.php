@@ -22,29 +22,26 @@
                         {{ $loop->iteration }}. {{ $assessment->question }}
                     </h3>
 
-                    {{-- Hidden real question ID --}}
-                    <input type="hidden" name="question_ids[{{ $loop->index }}]" value="{{ $assessment->id }}">
-
                     @if ($assessment->image)
                         <img src="{{ asset('storage/' . $assessment->image) }}" class="mb-4 max-w-full h-auto">
                     @endif
 
                     <div class="space-y-2">
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $loop->index }}]" value="A" required
-                                class="mr-2">
+                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="A"
+                                required class="mr-2">
                             {{ $assessment->optionA }}
                         </label>
 
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $loop->index }}]" value="B" required
-                                class="mr-2">
+                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="B"
+                                required class="mr-2">
                             {{ $assessment->optionB }}
                         </label>
 
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $loop->index }}]" value="C" required
-                                class="mr-2">
+                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="C"
+                                required class="mr-2">
                             {{ $assessment->optionC }}
                         </label>
                     </div>

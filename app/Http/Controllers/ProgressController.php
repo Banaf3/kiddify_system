@@ -94,7 +94,7 @@ class ProgressController extends Controller
             }
 
             return redirect()
-                ->route('student.courses.sections', $section->course)
+                ->route('student.courses.sections', $section->CourseID)
                 ->with('success', $message);
 
         } catch (\Exception $e) {
