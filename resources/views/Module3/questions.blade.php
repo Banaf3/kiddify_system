@@ -16,28 +16,51 @@
 
         <form id="assessment-form" action="{{ route('student.sections.questions.submit', $section->id) }}" method="POST">
             @csrf
-            @forelse($assessments as $assessment)
-                <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-                    <h3 class="font-semibold text-lg mb-4">{{ $assessment->question }}</h3>
-                    @if($assessment->image)
-                        <img src="{{ asset('storage/' . $assessment->image) }}" alt="Question Image" class="mb-4 max-w-full h-auto">
-                    @endif
-                    <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="A" class="mr-2" required>
-                            {{ $assessment->optionA }}
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="B" class="mr-2" required>
-                            {{ $assessment->optionB }}
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="C" class="mr-2" required>
-                            {{ $assessment->optionC }}
-                        </label>
-                    </div>
-                </div>
-            @empty
+        @forelse($assessments as $assessment)
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h3 class="font-semibold text-lg mb-4">
+            {{ $loop->iteration }}. {{ $assessment->question }}
+        </h3>
+
+        {{-- Hidden real question ID --}}
+        <input type="hidden" name="question_ids[{{ $loop->index }}]" value="{{ $assessment->id }}">
+
+        @if($assessment->image)
+            <img src="{{ asset('storage/' . $assessment->image) }}"
+                 class="mb-4 max-w-full h-auto">
+        @endif
+
+        <div class="space-y-2">
+            <label class="flex items-center">
+                <input type="radio"
+                       name="answers[{{ $loop->index }}]"
+                       value="A"
+                       required
+                       class="mr-2">
+                {{ $assessment->optionA }}
+            </label>
+
+            <label class="flex items-center">
+                <input type="radio"
+                       name="answers[{{ $loop->index }}]"
+                       value="B"
+                       required
+                       class="mr-2">
+                {{ $assessment->optionB }}
+            </label>
+
+            <label class="flex items-center">
+                <input type="radio"
+                       name="answers[{{ $loop->index }}]"
+                       value="C"
+                       required
+                       class="mr-2">
+                {{ $assessment->optionC }}
+            </label>
+        </div>
+    </div>
+@empty
+
                 <div class="bg-white shadow-md rounded-lg p-6 text-center text-gray-700">
                   You have reach the limit attempt 
                 </div>
