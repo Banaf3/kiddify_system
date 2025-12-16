@@ -115,7 +115,7 @@ Route::middleware('auth')->group(function () {
             $rules = [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $id,
-                'phone_number' => 'required|string|max:20',
+                'phone_number' => 'nullable|string|max:20',
                 'gender' => 'required|in:male,female',
                 'address' => 'required|string',
                 'date_of_birth' => 'required|date',

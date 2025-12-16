@@ -8,7 +8,7 @@
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-        @if($assessments->count() > 0)
+        @if ($assessments->count() > 0)
             <div class="mb-4 text-red-600 font-bold" id="timer">
                 Time Remaining: <span id="time"></span>
             </div>
@@ -18,33 +18,47 @@
             @csrf
             @forelse($assessments as $assessment)
                 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-                    <h3 class="font-semibold text-lg mb-4">{{ $assessment->question }}</h3>
-                    @if($assessment->image)
-                        <img src="{{ asset('storage/' . $assessment->image) }}" alt="Question Image" class="mb-4 max-w-full h-auto">
+                    <h3 class="font-semibold text-lg mb-4">
+                        {{ $loop->iteration }}. {{ $assessment->question }}
+                    </h3>
+
+                    {{-- Hidden real question ID --}}
+                    <input type="hidden" name="question_ids[{{ $loop->index }}]" value="{{ $assessment->id }}">
+
+                    @if ($assessment->image)
+                        <img src="{{ asset('storage/' . $assessment->image) }}" class="mb-4 max-w-full h-auto">
                     @endif
+
                     <div class="space-y-2">
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="A" class="mr-2" required>
+                            <input type="radio" name="answers[{{ $loop->index }}]" value="A" required
+                                class="mr-2">
                             {{ $assessment->optionA }}
                         </label>
+
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="B" class="mr-2" required>
+                            <input type="radio" name="answers[{{ $loop->index }}]" value="B" required
+                                class="mr-2">
                             {{ $assessment->optionB }}
                         </label>
+
                         <label class="flex items-center">
-                            <input type="radio" name="answers[{{ $assessment->AssessmentID }}]" value="C" class="mr-2" required>
+                            <input type="radio" name="answers[{{ $loop->index }}]" value="C" required
+                                class="mr-2">
                             {{ $assessment->optionC }}
                         </label>
                     </div>
                 </div>
             @empty
+
                 <div class="bg-white shadow-md rounded-lg p-6 text-center text-gray-700">
-                  You have reach the limit attempt 
+                    You have reach the limit attempt
                 </div>
             @endforelse
 
-            @if($assessments->count() > 0)
-                <button type="submit" id="submit-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            @if ($assessments->count() > 0)
+                <button type="submit" id="submit-btn"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Submit Answers
                 </button>
             @endif
@@ -56,17 +70,18 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function(){
+        document.addEventListener('DOMContentLoaded', function() {
             let duration = {{ $section->duration ?? 0 }} * 60; // duration in seconds
             const timerElement = document.getElementById('time');
             const form = document.getElementById('assessment-form');
 
-            function updateTimer(){
+            function updateTimer() {
                 let minutes = Math.floor(duration / 60);
                 let seconds = duration % 60;
-                timerElement.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+                timerElement.textContent =
+                    `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 
-                if(duration <= 0){
+                if (duration <= 0) {
                     clearInterval(timerInterval);
 
                     // Fancy SweetAlert2 alert

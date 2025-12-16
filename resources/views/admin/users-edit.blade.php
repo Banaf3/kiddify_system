@@ -33,9 +33,9 @@
 
                         <!-- Phone Number -->
                         <div class="mt-4">
-                            <x-input-label for="phone_number" :value="__('Phone Number')" />
+                            <x-input-label for="phone_number" :value="__('Phone Number (Optional)')" />
                             <x-text-input id="phone_number" class="block mt-1 w-full" type="text" name="phone_number"
-                                :value="old('phone_number', $user->phone_number)" required />
+                                :value="old('phone_number', $user->phone_number)" />
                             <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
                         </div>
 

@@ -84,17 +84,8 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <!-- Role -->
-        <div class="mt-4">
-            <x-input-label for="role" :value="__('I am a...')" />
-            <select id="role" name="role" class="block mt-1 w-full" required>
-                <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                <option value="parent" {{ old('role') == 'parent' ? 'selected' : '' }}>Parent</option>
-                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-            </select>
-            <x-input-error :messages="$errors->get('role')" class="mt-2" />
-            <p class="text-xs text-gray-500 mt-1">You can register as both Teacher and Parent with the same email</p>
-        </div>
+        <!-- Role (Hidden - Default to Parent) -->
+        <input type="hidden" name="role" value="parent">
 
         <div class="mt-6">
             <button type="submit" class="w-full">
