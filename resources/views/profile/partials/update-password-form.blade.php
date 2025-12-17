@@ -1,11 +1,10 @@
 <section>
     <header>
-        <h2 class="text-2xl font-bold leading-tight"
-            style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        <h2 class="text-2xl font-bold text-[#5A9CB5]">
             {{ __('Update Password') }}
         </h2>
 
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-sm text-gray-600">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
     </header>
@@ -40,7 +39,7 @@
 
             @if (session('status') === 'password-updated')
                 <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400">{{ __('Saved.') }}</p>
+                    class="text-sm font-bold text-green-600">{{ __('Saved.') }}</p>
             @endif
         </div>
     </form>

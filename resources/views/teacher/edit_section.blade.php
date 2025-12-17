@@ -8,7 +8,7 @@
 
         {{-- Back Button --}}
         <div class="mb-4">
-            <a href="{{ route('teacher.assessments') }}"
+            <a href="{{ route('teacher.course.sections', $section->CourseID) }}"
                class="text-blue-500 hover:underline">
                 ← Back to Sections
             </a>
@@ -106,7 +106,7 @@
 
                 {{-- Buttons --}}
                 <div class="flex justify-end space-x-2">
-                    <a href="{{ route('teacher.assessments') }}"
+                    <a href="{{ route('teacher.course.sections', $section->CourseID) }}"
                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
                         Cancel
                     </a>

@@ -105,8 +105,8 @@ class AssessmentController extends Controller
                 ->with('error', 'You have no attempts left for this assessment.');
         }
 
-        // Deduct attempt ONCE when entering
-        $section->markAttempt();
+        // Removed markAttempt call as it was session based. 
+        // Real attempt is recorded upon submission.
 
         $assessments = $section->assessments()->get();
         $course = $section->course;
@@ -130,9 +130,27 @@ class AssessmentController extends Controller
             }
         }
 
-        // Mark attempt in session
-        // Assuming markAttempt is a method on Section, but it's not defined in the model, so comment out or remove
-        // $section->markAttempt();
+        // Record attempt in database
+        $student = \App\Models\Student::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
+        if ($student) {
+            // Calculate next attempt number
+            $currentAttempts = \Illuminate\Support\Facades\DB::table('student_attempts')
+                ->where('student_id', $student->studentID)
+                ->where('section_id', $section->id)
+                ->max('attempt_number') ?? 0;
+
+            $attemptNumber = $currentAttempts + 1;
+
+            \Illuminate\Support\Facades\DB::table('student_attempts')->insert([
+                'student_id' => $student->studentID,
+                'section_id' => $section->id,
+                'attempt_number' => $attemptNumber,
+                'marks_obtained' => $grade,
+                'total_marks' => $section->assessments->sum('grade'), // Store total to avoid recalc
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         return redirect()->route('student.courses.sections', $section->CourseID)
             ->with('success', "Your answers have been submitted! Grade: $grade");

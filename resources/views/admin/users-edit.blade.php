@@ -1,15 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-3xl leading-tight"
-            style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        <h2 class="font-bold text-3xl leading-tight text-[#5A9CB5]">
             {{ __('Edit User') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-2xl rounded-3xl"
-                style="border: 2px solid rgba(236, 72, 153, 0.1);">
+            <div class="bg-white overflow-hidden shadow-[0_10px_30px_rgba(90,156,181,0.1)] rounded-[32px] border border-gray-100">
                 <div class="p-8">
                     <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
                         @csrf
@@ -55,11 +53,10 @@
                         <!-- Date of Birth -->
                         <div class="mt-4">
                             <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
-                            <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date"
-                                name="date_of_birth" :value="old(
-                                    'date_of_birth',
-                                    $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '',
-                                )" required max="2022-12-31"
+                            <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date" name="date_of_birth" :value="old(
+        'date_of_birth',
+        $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '',
+    )" required max="2022-12-31"
                                 style="color-scheme: light;" />
                             <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
                         </div>
@@ -67,15 +64,17 @@
                         <!-- Address -->
                         <div class="mt-4">
                             <x-input-label for="address" :value="__('Address')" />
-                            <textarea id="address" name="address" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>{{ old('address', $user->address) }}</textarea>
+                            <textarea id="address" name="address"
+                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                required>{{ old('address', $user->address) }}</textarea>
                             <x-input-error :messages="$errors->get('address')" class="mt-2" />
                         </div>
 
                         <!-- Role -->
                         <div class="mt-4">
                             <x-input-label for="role" :value="__('Role')" />
-                            <select id="role" name="role"
-                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
+                            <select id="role" name="role" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                required>
                                 <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin
                                 </option>
                                 <option value="teacher" {{ old('role', $user->role) == 'teacher' ? 'selected' : '' }}>
@@ -95,11 +94,9 @@
                                 <select id="account_status" name="account_status"
                                     class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
                                     onchange="togglePasswordField()">
-                                    <option value="inactive"
-                                        {{ old('account_status', $user->student->account_status ?? 'inactive') == 'inactive' ? 'selected' : '' }}>
+                                    <option value="inactive" {{ old('account_status', $user->student->account_status ?? 'inactive') == 'inactive' ? 'selected' : '' }}>
                                         Inactive</option>
-                                    <option value="active"
-                                        {{ old('account_status', $user->student->account_status ?? 'inactive') == 'active' ? 'selected' : '' }}>
+                                    <option value="active" {{ old('account_status', $user->student->account_status ?? 'inactive') == 'active' ? 'selected' : '' }}>
                                         Active</option>
                                 </select>
                                 <x-input-error :messages="$errors->get('account_status')" class="mt-2" />
@@ -138,7 +135,7 @@
                                 }
 
                                 // Run on page load
-                                document.addEventListener('DOMContentLoaded', function() {
+                                document.addEventListener('DOMContentLoaded', function () {
                                     togglePasswordField();
                                 });
                             </script>
@@ -150,8 +147,7 @@
                                 {{ __('Cancel') }}
                             </a>
                             <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150"
-                                style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);">
+                                class="inline-flex items-center px-4 py-2 bg-[#5A9CB5] border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5A9CB5] hover:bg-[#4A8CA5] transition ease-in-out duration-150 shadow-md">
                                 {{ __('Update User') }}
                             </button>
                         </div>

@@ -1,7 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-3xl leading-tight"
-            style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        <h2 class="font-bold text-3xl leading-tight text-[#5A9CB5]">
             {{ __('Add Teacher') }}
         </h2>
     </x-slot>
@@ -10,16 +9,16 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Success Message -->
             @if (session('success'))
-                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <div class="mb-4 p-4 bg-[#FACE68]/20 border border-[#FAAC68] text-[#FAAC68] rounded-lg">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-2xl rounded-3xl"
-                style="border: 2px solid rgba(236, 72, 153, 0.1);">
+            <div
+                class="bg-white overflow-hidden shadow-[0_10px_30px_rgba(90,156,181,0.1)] rounded-[32px] border border-gray-100">
                 <div class="p-8">
                     <div class="mb-6">
-                        <h3 class="text-2xl font-bold" style="color: #9333EA;">Add New Teacher</h3>
+                        <h3 class="text-2xl font-bold text-[#5A9CB5]">Add New Teacher</h3>
                         <p class="text-gray-600 mt-1">Fill in the information to create a new teacher account</p>
                     </div>
 
@@ -73,24 +72,25 @@
                         <!-- Date of Birth -->
                         <div class="mt-4">
                             <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
-                            <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date"
-                                name="date_of_birth" :value="old('date_of_birth')" required max="2000-12-31"
-                                style="color-scheme: light;" />
+                            <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date" name="date_of_birth"
+                                :value="old('date_of_birth')" required max="2000-12-31" style="color-scheme: light;" />
                             <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
                         </div>
 
                         <!-- Address -->
                         <div class="mt-4">
                             <x-input-label for="address" :value="__('Address')" />
-                            <textarea id="address" name="address" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>{{ old('address') }}</textarea>
+                            <textarea id="address" name="address"
+                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                required>{{ old('address') }}</textarea>
                             <x-input-error :messages="$errors->get('address')" class="mt-2" />
                         </div>
 
                         <!-- Qualification -->
                         <div class="mt-4">
                             <x-input-label for="qualification" :value="__('Qualification')" />
-                            <x-text-input id="qualification" class="block mt-1 w-full" type="text"
-                                name="qualification" :value="old('qualification')" required />
+                            <x-text-input id="qualification" class="block mt-1 w-full" type="text" name="qualification"
+                                :value="old('qualification')" required />
                             <x-input-error :messages="$errors->get('qualification')" class="mt-2" />
                         </div>
 
@@ -106,8 +106,8 @@
                         <!-- School Branch -->
                         <div class="mt-4">
                             <x-input-label for="school_branch" :value="__('School Branch')" />
-                            <x-text-input id="school_branch" class="block mt-1 w-full" type="text"
-                                name="school_branch" :value="old('school_branch')" required />
+                            <x-text-input id="school_branch" class="block mt-1 w-full" type="text" name="school_branch"
+                                :value="old('school_branch')" required />
                             <x-input-error :messages="$errors->get('school_branch')" class="mt-2" />
                         </div>
 
@@ -117,8 +117,7 @@
                                 {{ __('Cancel') }}
                             </a>
                             <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150"
-                                style="background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);">
+                                class="inline-flex items-center px-4 py-2 bg-[#5A9CB5] border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5A9CB5] hover:bg-[#4A8CA5] transition ease-in-out duration-150 shadow-md">
                                 {{ __('Add Teacher') }}
                             </button>
                         </div>

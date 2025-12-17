@@ -1,1 +1,1 @@
-<img src="{{ asset('images/Logo.png') }}" alt="Kiddify Logo" {{ $attributes->merge(['class' => 'object-contain']) }} />
+<img src="{{ asset('images/kiddify_logo.svg') }}" alt="Kiddify Logo" {{ $attributes->merge(['class' => 'object-contain']) }} />

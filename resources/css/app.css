@@ -2,193 +2,150 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Kiddify Custom Styles */
 @layer components {
-    /* Input Fields */
+    /* =========================================
+       Kiddify Brand Form Elements
+       ========================================= */
+
+    /* Generic Input Styling */
     input[type="text"],
     input[type="email"],
     input[type="password"],
     input[type="date"],
+    input[type="number"],
+    input[type="search"],
+    input[type="tel"],
+    textarea,
     select {
-        @apply w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-900 transition-all duration-300;
-        @apply focus:border-pink-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-pink-100;
+        @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-900 transition-all duration-300;
         font-size: 15px;
-        position: relative;
     }
 
-    input[type="text"]:hover,
-    input[type="email"]:hover,
-    input[type="password"]:hover,
-    input[type="date"]:hover,
-    select:hover {
-        @apply border-pink-300 bg-white;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(236, 72, 153, 0.15);
-    }
-
+    /* Focus State - Kiddify Blue */
     input[type="text"]:focus,
     input[type="email"]:focus,
     input[type="password"]:focus,
     input[type="date"]:focus,
+    input[type="number"]:focus,
+    input[type="search"]:focus,
+    input[type="tel"]:focus,
+    textarea:focus,
     select:focus {
-        transform: translateY(-2px) scale(1.01);
-        box-shadow: 0 10px 30px rgba(236, 72, 153, 0.2);
+        @apply outline-none bg-white;
+        border-color: #5A9CB5;
+        box-shadow: 0 0 0 4px rgba(90, 156, 181, 0.15);
+        /* Soft blue ring */
+        transform: translateY(-1px);
     }
 
-    /* Date Input Styling */
-    input[type="date"] {
-        color-scheme: light !important;
-        background-color: rgb(249 250 251) !important;
-        color: rgb(17 24 39) !important;
+    /* Hover State */
+    input:hover,
+    textarea:hover,
+    select:hover {
+        @apply bg-white border-gray-300;
     }
 
-    input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(0.5);
-        cursor: pointer;
-        background-color: transparent;
+    /* Checkboxes & Radios */
+    input[type="checkbox"],
+    input[type="radio"] {
+        @apply rounded border-gray-300 text-[#5A9CB5] shadow-sm;
+        color: #5A9CB5 !important;
     }
 
-    input[type="date"]::-webkit-datetime-edit {
-        color: rgb(17 24 39) !important;
-        background-color: transparent;
-    }
-
-    input[type="date"]::-webkit-datetime-edit-fields-wrapper {
-        color: rgb(17 24 39) !important;
-        background-color: transparent;
-    }
-
-    input[type="date"]::-webkit-datetime-edit-text {
-        color: rgb(17 24 39) !important;
-    }
-
-    input[type="date"]::-webkit-datetime-edit-month-field,
-    input[type="date"]::-webkit-datetime-edit-day-field,
-    input[type="date"]::-webkit-datetime-edit-year-field {
-        color: rgb(17 24 39) !important;
-        background-color: transparent;
+    input[type="checkbox"]:focus,
+    input[type="radio"]:focus {
+        @apply ring-2 ring-offset-2;
+        --tw-ring-color: #5A9CB5 !important;
     }
 
     /* Labels */
     label {
-        @apply block text-sm font-semibold mb-2;
-        color: #1F2937 !important;
-        font-weight: 700 !important;
-        font-size: 14px !important;
+        @apply block text-sm font-bold text-gray-900 mb-1;
     }
 
-    /* Primary Button */
-    .btn-primary,
+    /* =========================================
+       Kiddify Brand Buttons
+       ========================================= */
+
+    /* Global Submit Button Default (Blue) */
     button[type="submit"] {
-        @apply w-full px-6 py-3.5 text-white font-bold rounded-xl;
-        @apply transition-all duration-300 shadow-lg;
-        background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-size: 14px;
+        @apply w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-md text-base font-bold text-white transition-all duration-300;
+        background-color: #5A9CB5;
     }
 
-    .btn-primary:hover,
     button[type="submit"]:hover {
-        @apply shadow-2xl;
+        background-color: #4A8CA5;
+        /* Slightly darker blue */
         transform: translateY(-2px);
-        background: linear-gradient(135deg, #F472B6 0%, #C084FC 100%);
+        box-shadow: 0 4px 12px rgba(90, 156, 181, 0.3);
     }
 
-    /* Secondary Button / Register Button */
-    .register-btn,
-    a.register-btn {
-        @apply w-full inline-block text-center px-6 py-3.5 font-bold rounded-xl;
-        @apply transition-all duration-300 shadow-lg;
-        background: #F3F4F6;
-        color: #9333EA;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-size: 14px;
-        text-decoration: none;
+    button[type="submit"]:active {
+        transform: translateY(0);
     }
 
-    .register-btn:hover,
-    a.register-btn:hover {
-        background: #E5E7EB;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(147, 51, 234, 0.15);
+    /* Secondary / Register Action (Orange) */
+    .btn-kiddify-orange,
+    .register-btn {
+        @apply text-white;
+        background-color: #FAAC68;
     }
 
-    /* Links */
-    a.underline {
-        @apply font-medium transition-colors duration-200;
-        color: #A855F7;
-        text-decoration: underline;
+    .btn-kiddify-orange:hover,
+    .register-btn:hover {
+        background-color: #F0A058;
+        box-shadow: 0 4px 12px rgba(250, 172, 104, 0.3);
     }
 
-    a.underline:hover {
-        color: #EC4899;
+    /* Primary Action (Blue) - Explicit Class */
+    .btn-kiddify-blue {
+        @apply text-white;
+        background-color: #5A9CB5;
     }
 
-    /* Checkbox */
-    input[type="checkbox"] {
-        @apply w-5 h-5 rounded-md border-2 border-gray-300 transition-all duration-200;
-        accent-color: #EC4899;
+    .btn-kiddify-blue:hover {
+        background-color: #4A8CA5;
+        box-shadow: 0 4px 12px rgba(90, 156, 181, 0.3);
     }
 
-    input[type="checkbox"]:checked {
-        @apply border-pink-500;
+    /* Danger Action (Red) */
+    .btn-kiddify-red {
+        @apply text-white;
+        background-color: #FA6868;
     }
 
-    input[type="checkbox"]:focus {
-        @apply ring-4 ring-pink-100 outline-none;
+    .btn-kiddify-red:hover {
+        background-color: #E85858;
+        box-shadow: 0 4px 12px rgba(250, 104, 104, 0.3);
     }
 
-    /* Navigation Links */
-    .nav-link {
-        @apply inline-flex items-center px-5 py-2.5 text-sm font-bold rounded-xl transition-all duration-300;
-        color: #6B7280;
-        position: relative;
+    /* =========================================
+       Typography & Links
+       ========================================= */
+
+    a {
+        @apply transition-colors duration-200;
     }
 
-    .nav-link:hover {
-        background: rgba(236, 72, 153, 0.08);
-        color: #EC4899;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15);
+    a.text-brand {
+        color: #5A9CB5;
     }
 
-    .nav-link.active {
-        background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
-        color: white;
-        box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
-        transform: translateY(-1px);
+    a.text-brand:hover {
+        color: #FAAC68;
     }
 
-    .nav-link.active::before {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60%;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, #EC4899, transparent);
-        border-radius: 2px;
+    /* Headers */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-bold text-gray-800;
     }
 
-    /* Guest Navigation Links */
-    .guest-nav-link {
-        @apply inline-flex items-center px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200;
-        color: #6B7280;
-        border: 2px solid transparent;
-    }
-
-    .guest-nav-link:hover {
-        background: rgba(236, 72, 153, 0.1);
-        color: #EC4899;
-        border-color: rgba(236, 72, 153, 0.2);
-    }
-
-    .guest-nav-link.active {
-        background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    [x-cloak] {
+        display: none !important;
     }
 }

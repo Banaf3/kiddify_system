@@ -28,8 +28,15 @@ class Section extends Model
     // Attempts USED
     public function attemptsUsed()
     {
-        $attempts = session()->get('section_attempts', []);
-        return $attempts[$this->id] ?? 0;
+        $student = \App\Models\Student::where('user_id', \Illuminate\Support\Facades\Auth::id())->first();
+        if (!$student)
+            return 0;
+
+        return \Illuminate\Support\Facades\DB::table('student_attempts')
+            ->where('student_id', $student->studentID)
+            ->where('section_id', $this->id)
+            ->distinct('attempt_number')
+            ->count('attempt_number');
     }
 
     // Attempts LEFT
@@ -43,16 +50,17 @@ class Section extends Model
         return $this->attemptsLeft() > 0;
     }
 
-    // Increase attempt count
-    public function markAttempt()
-    {
-        $attempts = session()->get('section_attempts', []);
-        $attempts[$this->id] = ($attempts[$this->id] ?? 0) + 1;
-        session()->put('section_attempts', $attempts);
-    }
+    // Increase attempt count (Removed as this should be handled by controller logic, not model getter)
+    // But kept here as placeholder or deprecated if needed, though logic should be in controller.
+    // For now, removing the session-based markAttempt as it's misleading.
 
     public function status()
     {
-        return $this->attemptsUsed() > 0 ? 'Taken' : 'Not Taken';
+        $used = $this->attemptsUsed();
+        if ($used >= $this->attempt_limit)
+            return 'Completed';
+        if ($used > 0)
+            return 'Taken';
+        return 'Not Started';
     }
 }

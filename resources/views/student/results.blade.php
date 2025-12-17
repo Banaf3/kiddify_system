@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            📊 My Assessment Results
+        <h2 class="font-bold text-3xl text-[#5A9CB5] leading-tight">
+            📊 {{ __('My Assessment Results') }}
         </h2>
     </x-slot>
 
@@ -9,103 +9,118 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Overall Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-blue-50 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-[#5A9CB5]/10 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <p class="text-sm text-gray-600">Total Assessments</p>
-                        <p class="text-3xl font-bold text-blue-600">{{ $stats['total_assessments'] }}</p>
+                        <p class="text-sm font-bold text-gray-600">Total Assessments</p>
+                        <p class="text-3xl font-extrabold text-[#5A9CB5]">{{ $stats['total_assessments'] }}</p>
                     </div>
                 </div>
-                <div class="bg-purple-50 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-[#FA6868]/10 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <p class="text-sm text-gray-600">Total Attempts</p>
-                        <p class="text-3xl font-bold text-purple-600">{{ $stats['total_attempts'] }}</p>
+                        <p class="text-sm font-bold text-gray-600">Total Attempts</p>
+                        <p class="text-3xl font-extrabold text-[#FA6868]">{{ $stats['total_attempts'] }}</p>
                     </div>
                 </div>
-                <div class="bg-green-50 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-[#FACE68]/10 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <p class="text-sm text-gray-600">Graded Assessments</p>
-                        <p class="text-3xl font-bold text-green-600">{{ $stats['graded_assessments'] }}</p>
+                        <p class="text-sm font-bold text-gray-600">Graded Assessments</p>
+                        <p class="text-3xl font-extrabold text-[#FAAC68]">{{ $stats['graded_assessments'] }}</p>
                     </div>
                 </div>
-                <div class="bg-orange-50 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-gray-100 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <p class="text-sm text-gray-600">Average Score</p>
-                        <p class="text-3xl font-bold text-orange-600">{{ $stats['average_score'] }}%</p>
+                        <p class="text-sm font-bold text-gray-600">Average Score</p>
+                        <p class="text-3xl font-extrabold text-gray-700">{{ $stats['average_score'] }}%</p>
                     </div>
                 </div>
             </div>
 
             @if($resultsByCourse->isEmpty())
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-500 text-center">
+                    <div class="p-12 text-gray-400 text-center font-medium text-lg">
                         You haven't attempted any assessments yet.
                     </div>
                 </div>
             @else
                 @foreach($resultsByCourse as $courseName => $results)
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                        <div class="p-6 bg-white border-b border-gray-200">
-                            <h3 class="text-lg font-semibold mb-4">{{ $courseName }}</h3>
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-100">
+                        <div class="p-6 bg-white border-b border-gray-100">
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="h-6 w-1 rounded-full bg-[#5A9CB5]"></div>
+                                <h3 class="text-xl font-bold text-gray-800">{{ $courseName }}</h3>
+                            </div>
 
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-auto rounded-xl border border-gray-100">
                                 <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
+                                    <thead class="bg-[#5A9CB5]/5">
                                         <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attempts</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Best Score</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Attempt</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-xs font-bold text-[#5A9CB5] uppercase tracking-wider">
+                                                Assessment</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-xs font-bold text-[#5A9CB5] uppercase tracking-wider">
+                                                Attempts</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-xs font-bold text-[#5A9CB5] uppercase tracking-wider">
+                                                Best Score</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-xs font-bold text-[#5A9CB5] uppercase tracking-wider">
+                                                Last Attempt</th>
+                                            <th
+                                                class="px-6 py-4 text-left text-xs font-bold text-[#5A9CB5] uppercase tracking-wider">
+                                                Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
+                                    <tbody class="bg-white divide-y divide-gray-100">
                                         @foreach($results as $result)
-                                            <tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
                                                 <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm font-medium text-gray-900">
+                                                    <div class="text-sm font-bold text-gray-700">
                                                         {{ $result['section'] }}
                                                     </div>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
                                                     {{ $result['attempts'] }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
                                                     @if($result['grade_visible'])
                                                         <div>
-                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                @if($result['percentage'] >= 70) bg-green-100 text-green-800
-                                                                @elseif($result['percentage'] >= 50) bg-yellow-100 text-yellow-800
-                                                                @else bg-red-100 text-red-800
-                                                                @endif">
+                                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full 
+                                                                                @if($result['percentage'] >= 70) bg-green-100 text-green-700
+                                                                                @elseif($result['percentage'] >= 50) bg-[#FACE68]/20 text-[#FAAC68]
+                                                                                @else bg-[#FA6868]/10 text-[#FA6868]
+                                                                                @endif">
                                                                 {{ $result['score'] }}/{{ $result['total'] }}
                                                             </span>
-                                                            <span class="ml-2 text-sm font-semibold 
-                                                                @if($result['percentage'] >= 70) text-green-600
-                                                                @elseif($result['percentage'] >= 50) text-yellow-600
-                                                                @else text-red-600
-                                                                @endif">
+                                                            <span class="ml-2 text-sm font-bold 
+                                                                                @if($result['percentage'] >= 70) text-green-600
+                                                                                @elseif($result['percentage'] >= 50) text-[#FAAC68]
+                                                                                @else text-[#FA6868]
+                                                                                @endif">
                                                                 ({{ $result['percentage'] }}%)
                                                             </span>
                                                         </div>
                                                     @else
-                                                        <span class="text-gray-400 italic text-sm">Pending grading</span>
+                                                        <span class="text-gray-400 italic text-sm font-medium">Pending grading</span>
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {{ \Carbon\Carbon::parse($result['last_attempt'])->format('M d, Y H:i') }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <div class="flex gap-2">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                                                    <div class="flex gap-4">
                                                         @if($result['review_enabled'])
                                                             <a href="{{ route('student.review-attempt', $result['section_id']) }}" 
-                                                               class="text-purple-600 hover:text-purple-900">
+                                                               class="text-[#5A9CB5] hover:text-[#4A8CA5] transition-colors no-underline flex items-center gap-1">
                                                                 📝 Review
                                                             </a>
                                                         @endif
-                                                        <a href="{{ route('student.courses.sections', $result['course_id']) }}" 
-                                                           class="text-indigo-600 hover:text-indigo-900">
-                                                            🔄 Retake
-                                                        </a>
+                                                        @if($result['can_retake'])
+                                                            <a href="{{ route('student.courses.sections', $result['course_id']) }}" 
+                                                               class="text-[#FA6868] hover:text-[#E85858] transition-colors no-underline flex items-center gap-1">
+                                                                🔄 Retake
+                                                            </a>
+                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>
@@ -115,26 +130,26 @@
                             </div>
 
                             <!-- Course Summary -->
-                            <div class="mt-4 flex gap-4 text-sm">
-                                <div class="bg-gray-50 px-4 py-2 rounded">
-                                    <span class="text-gray-600">Total Assessments: </span>
-                                    <span class="font-semibold">{{ $results->count() }}</span>
+                            <div class="mt-6 flex flex-wrap gap-4 text-sm">
+                                <div class="bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+                                    <span class="text-gray-500 font-medium">Total Assessments: </span>
+                                    <span class="font-bold text-gray-800">{{ $results->count() }}</span>
                                 </div>
-                                <div class="bg-gray-50 px-4 py-2 rounded">
-                                    <span class="text-gray-600">Average: </span>
+                                <div class="bg-gray-50 px-4 py-2 rounded-lg border border-gray-100">
+                                    <span class="text-gray-500 font-medium">Average: </span>
                                     @php
                                         $visibleGrades = $results->where('grade_visible', 1);
                                         $courseAvg = $visibleGrades->count() > 0 ? round($visibleGrades->avg('percentage'), 1) : 0;
                                     @endphp
-                                    <span class="font-semibold 
-                                        @if($courseAvg >= 70) text-green-600
-                                        @elseif($courseAvg >= 50) text-yellow-600
-                                        @else text-red-600
-                                        @endif">
+                                    <span class="font-bold 
+                                                @if($courseAvg >= 70) text-green-600
+                                                @elseif($courseAvg >= 50) text-[#FAAC68]
+                                                @else text-[#FA6868]
+                                                @endif">
                                         {{ $courseAvg }}%
                                     </span>
                                     @if($visibleGrades->count() === 0)
-                                        <span class="text-xs text-gray-500">(No graded assessments)</span>
+                                        <span class="text-xs text-gray-400 ml-1">(No graded assessments)</span>
                                     @endif
                                 </div>
                             </div>

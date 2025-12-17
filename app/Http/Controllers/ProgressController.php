@@ -549,10 +549,11 @@ class ProgressController extends Controller
                 'student_attempts.section_id',
                 'sections.grade_visible',
                 'sections.review_enabled',
+                'sections.attempt_limit',
                 DB::raw('COUNT(DISTINCT attempt_number) as total_attempts'),
                 DB::raw('MAX(student_attempts.created_at) as last_attempt')
             )
-            ->groupBy('courses.Title', 'courses.CourseID', 'sections.name', 'sections.id', 'student_attempts.section_id', 'sections.grade_visible', 'sections.review_enabled')
+            ->groupBy('courses.Title', 'courses.CourseID', 'sections.name', 'sections.id', 'student_attempts.section_id', 'sections.grade_visible', 'sections.review_enabled', 'sections.attempt_limit')
             ->get();
 
         // Calculate scores per section
@@ -576,6 +577,7 @@ class ProgressController extends Controller
                 'grade_visible' => $progress->grade_visible,
                 'review_enabled' => $progress->review_enabled,
                 'attempts' => $progress->total_attempts,
+                'can_retake' => ($progress->total_attempts < $progress->attempt_limit),
                 'score' => $highestScore,
                 'total' => $totalMarks,
                 'percentage' => $percentage,

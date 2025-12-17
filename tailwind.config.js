@@ -14,6 +14,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'kiddify-blue': '#5A9CB5',
+                'kiddify-yellow': '#FACE68',
+                'kiddify-orange': '#FAAC68',
+                'kiddify-red': '#FA6868',
+            },
         },
     },
 
