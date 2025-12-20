@@ -40,6 +40,9 @@
         <main>
             {{ $slot }}
         </main>
+
+        <!-- AI Chat Widget -->
+        <x-ai-chat-widget />
     </div>
 </body>
 

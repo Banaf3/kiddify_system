@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $admins = [
             [
                 'name' => 'hamed',
-                'email' => 'hamed@gmail.com',
+                'email' => 'khaled.q557@gmail.com',
                 'password' => '123456123',
                 'phone_number' => '1234567890',
             ],

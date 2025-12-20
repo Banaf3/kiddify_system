@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\StudentScore;
 use App\Models\Section;
@@ -24,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Configure AI Chat rate limiting
+        RateLimiter::for('ai-chat', function (Request $request) {
+            return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
+        });
         // Define authorization gates for role-based access
         Gate::define('isAdmin', function (User $user) {
             return $user->isAdmin();

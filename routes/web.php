@@ -10,6 +10,9 @@ use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\OtpCodeMail;
 
 Route::get('/', function () {
     Auth::logout();
@@ -17,6 +20,136 @@ Route::get('/', function () {
     request()->session()->regenerateToken();
     return view('home');
 })->name('home');
+
+// Debug Mail Configuration Endpoint (Local Environment Only)
+Route::get('/debug/mail-config', function () {
+    // Only allow in local environment
+    if (!app()->environment('local')) {
+        abort(404);
+    }
+
+    $mailer = config('mail.default');
+    $smtpConfig = config('mail.mailers.smtp');
+    $fromConfig = config('mail.from');
+
+    return response()->json([
+        'mail_configuration' => [
+            'default_mailer' => $mailer,
+            'smtp' => [
+                'host' => $smtpConfig['host'] ?? null,
+                'port' => $smtpConfig['port'] ?? null,
+                'encryption' => $smtpConfig['encryption'] ?? null,
+                'username' => $smtpConfig['username'] ?? null,
+                'password_set' => !empty($smtpConfig['password']),
+            ],
+            'from' => [
+                'address' => $fromConfig['address'] ?? null,
+                'name' => $fromConfig['name'] ?? null,
+            ],
+        ],
+        'environment' => [
+            'app_env' => config('app.env'),
+            'app_debug' => config('app.debug'),
+        ],
+        'warnings' => [
+            'mailer_is_log' => $mailer === 'log' ? 'WARNING: Mailer is set to log, emails will not be sent!' : null,
+            'mailer_is_array' => $mailer === 'array' ? 'WARNING: Mailer is set to array, emails will not be sent!' : null,
+            'smtp_not_gmail' => (!empty($smtpConfig['host']) && $smtpConfig['host'] !== 'smtp.gmail.com') ? 'WARNING: SMTP host is not Gmail' : null,
+            'default_from_address' => ($fromConfig['address'] ?? null) === 'hello@example.com' ? 'WARNING: Using default from address' : null,
+        ],
+        'instructions' => 'Update .env file with Gmail SMTP credentials and run: php artisan config:clear',
+    ], 200, [], JSON_PRETTY_PRINT);
+})->name('debug.mail.config');
+
+// Debug Mail Test Endpoint (Local Environment Only)
+Route::get('/debug/mail-test', function () {
+    // Only allow in local environment
+    if (config('app.env') !== 'local') {
+        abort(404);
+    }
+
+    try {
+        // Get test user (logged in user or first user)
+        $user = Auth::check() ? Auth::user() : App\Models\User::first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No users found in database. Create a user first.'
+            ], 404);
+        }
+
+        // Generate test OTP
+        $testOtp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Log attempt
+        Log::info('Debug mail test initiated', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'purpose' => 'debug_test',
+            'env' => config('app.env'),
+            'mail_mailer' => config('mail.default'),
+            'mail_host' => config('mail.mailers.smtp.host'),
+            'mail_port' => config('mail.mailers.smtp.port'),
+            'mail_encryption' => config('mail.mailers.smtp.encryption'),
+            'mail_from' => config('mail.from.address')
+        ]);
+
+        // Send email
+        Mail::to($user->email)->send(new OtpCodeMail($user, $testOtp, 'login'));
+
+        Log::info('Debug mail test sent successfully', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'otp' => $testOtp
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Test OTP email sent successfully!',
+            'details' => [
+                'recipient' => $user->email,
+                'otp_code' => $testOtp,
+                'purpose' => 'login',
+                'mailer' => config('mail.default'),
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'from' => config('mail.from.address'),
+                'note' => 'Check your email inbox (and spam folder). This is a test OTP and will not work for actual login.'
+            ]
+        ], 200);
+
+    } catch (\Exception $e) {
+        Log::error('Debug mail test failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'user_email' => $user->email ?? 'unknown',
+            'mail_config' => [
+                'mailer' => config('mail.default'),
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'username' => config('mail.mailers.smtp.username'),
+                'from' => config('mail.from.address')
+            ]
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to send test email',
+            'error' => $e->getMessage(),
+            'troubleshooting' => [
+                'Check your .env file has correct Gmail SMTP credentials',
+                'Make sure you are using a Gmail App Password (not regular password)',
+                'Run: php artisan config:clear',
+                'Run: php artisan gmail:test ' . ($user->email ?? 'your@email.com'),
+                'Check logs: storage/logs/laravel.log',
+                'Verify Gmail account allows "Less secure app access" or use App Password'
+            ]
+        ], 500);
+    }
+})->name('debug.mail.test');
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
@@ -46,8 +179,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Profile password verification (first step)
     Route::get('/profile/verify', [ProfileController::class, 'showVerify'])->name('profile.verify.show');
     Route::post('/profile/verify', [ProfileController::class, 'verify'])->name('profile.verify');
+
+    // Profile routes (protected by OTP after password verification)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -403,5 +539,13 @@ Route::middleware('auth')->group(function () {
 Route::middleware('can:isAdmin')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/reports', [\App\Http\Controllers\ProgressController::class, 'adminReports'])->name('reports');
 });
+
+// AI Chat Routes (Authenticated users only with rate limiting)
+Route::middleware(['auth', 'throttle:ai-chat'])->prefix('ai')->name('ai.')->group(function () {
+    Route::get('/chat/history', [\App\Http\Controllers\AiChatController::class, 'history'])->name('chat.history');
+    Route::post('/chat', [\App\Http\Controllers\AiChatController::class, 'sendMessage'])->name('chat.send');
+    Route::post('/chat/clear', [\App\Http\Controllers\AiChatController::class, 'clearHistory'])->name('chat.clear');
+});
+
 require __DIR__ . '/auth.php';
 

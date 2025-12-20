@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Mail\OtpCodeMail;
+use App\Services\OtpService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -18,16 +23,11 @@ class ProfileController extends Controller
      */
     public function showVerify()
     {
-        // If already verified in this session, redirect to edit
-        if (session('profile_verified')) {
-            return redirect()->route('profile.edit');
-        }
-
         return view('profile.verify');
     }
 
     /**
-     * Verify user credentials before allowing profile access
+     * Verify user credentials and send OTP
      */
     public function verify(Request $request): RedirectResponse
     {
@@ -48,22 +48,43 @@ class ProfileController extends Controller
             return back()->withErrors(['password' => 'Password is incorrect.']);
         }
 
-        // Set session flag for verification (valid for 10 minutes)
-        session(['profile_verified' => true, 'profile_verified_at' => now()]);
+        // Password verified, now generate and send OTP
+        $otpService = new OtpService();
+        $otp = $otpService->generate($user, 'profile');
 
-        return redirect()->route('profile.edit');
+        try {
+            Mail::to($user->email)->send(new OtpCodeMail($user, $otp, 'profile'));
+
+            Log::info('Profile OTP email sent after password verification', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send profile OTP after password verification', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+            return back()->withErrors(['email' => 'Failed to send OTP. Please try again.']);
+        }
+
+        // Redirect to OTP verification
+        return redirect()->route('otp.verify', ['purpose' => 'profile', 'redirect' => route('profile.edit')])
+            ->with('success', 'OTP code sent to your email. Check spam folder if not received.');
     }
 
     /**
      * Display the user's profile form.
+     * Protected by OTP verification - must verify via /profile/verify first
      */
     public function edit(Request $request)
     {
-        // Check if verification is required
-        if (!session('profile_verified') ||
-            (session('profile_verified_at') && now()->diffInMinutes(session('profile_verified_at')) > 10)) {
-            session()->forget(['profile_verified', 'profile_verified_at']);
-            return redirect()->route('profile.verify.show');
+        // Check if OTP was verified recently
+        $user = $request->user();
+
+        if (!$user->profile_otp_verified_at ||
+            Carbon::parse($user->profile_otp_verified_at)->addMinutes(10)->isPast()) {
+            return redirect()->route('profile.verify.show')
+                ->with('error', 'Please verify your identity to access your profile.');
         }
 
         return view('profile.edit', [
