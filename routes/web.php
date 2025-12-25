@@ -80,7 +80,7 @@ Route::get('/debug/mail-test', function () {
         }
 
         // Generate test OTP
-        $testOtp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $testOtp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         // Log attempt
         Log::info('Debug mail test initiated', [
