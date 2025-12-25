@@ -183,7 +183,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')"
+                        <x-dropdown-link :href="route('profile.verify.show')"
                             class="hover:bg-[#5A9CB5]/10 hover:text-[#5A9CB5] font-semibold text-gray-600">
                             {{ __('Profile Settings') }}
                         </x-dropdown-link>
@@ -192,7 +192,8 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
+                            <x-dropdown-link :href="route('logout')"
+                                onclick="event.preventDefault();
                                                 this.closest('form').submit();"
                                 class="text-[#FA6868] hover:bg-[#FA6868]/10 hover:text-[#FA6868] font-semibold">
                                 {{ __('Log Out') }}
@@ -236,20 +237,17 @@
                     {{ __('Reports') }}
                 </x-responsive-nav-link>
             @elseif(Auth::user()->isTeacher())
-                <x-responsive-nav-link :href="route('teacher.courses.index')"
-                    :active="request()->routeIs('teacher.courses.*')">
+                <x-responsive-nav-link :href="route('teacher.courses.index')" :active="request()->routeIs('teacher.courses.*')">
                     {{ __('My Courses') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('teacher.assessments')"
-                    :active="request()->routeIs('teacher.assessments')">
+                <x-responsive-nav-link :href="route('teacher.assessments')" :active="request()->routeIs('teacher.assessments')">
                     {{ __('Assessments') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('teacher.grading')" :active="request()->routeIs('teacher.grading')">
                     {{ __('Grading') }}
                 </x-responsive-nav-link>
             @elseif(Auth::user()->isStudent())
-                <x-responsive-nav-link :href="route('student.courses.index')"
-                    :active="request()->routeIs('student.courses.*')">
+                <x-responsive-nav-link :href="route('student.courses.index')" :active="request()->routeIs('student.courses.*')">
                     {{ __('My Courses') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student.results')" :active="request()->routeIs('student.results')">
@@ -281,7 +279,8 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
+                    <x-responsive-nav-link :href="route('logout')"
+                        onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>

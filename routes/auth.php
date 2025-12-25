@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\OtpController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -34,6 +35,15 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
 });
+
+// OTP verification routes (accessible to both guest and authenticated users)
+Route::get('otp/verify', [OtpController::class, 'showVerify'])
+    ->name('otp.verify');
+
+Route::post('otp/verify', [OtpController::class, 'verify']);
+
+Route::post('otp/resend', [OtpController::class, 'resend'])
+    ->name('otp.resend');
 
 Route::middleware('auth')->group(function () {
     Route::get('select-role', [AuthenticatedSessionController::class, 'showRoleSelection'])

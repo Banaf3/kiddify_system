@@ -1,4 +1,5 @@
 import './bootstrap';
+import './ai-chat';
 
 import Alpine from 'alpinejs';
 

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'gender',
         'address',
         'date_of_birth',
+        'profile_otp_verified_at',
     ];
 
     /**
@@ -115,5 +116,13 @@ class User extends Authenticatable
     public function parentModel()
     {
         return $this->hasOne(ParentModel::class, 'user_id');
+    }
+
+    /**
+     * Send the password reset notification.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
     }
 }

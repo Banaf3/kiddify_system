@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Mail\OtpCodeMail;
+use App\Services\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -24,16 +28,51 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Validate credentials but don't log in yet
         $request->authenticate();
 
-        $request->session()->regenerate();
+        // Get the authenticated user
+        $user = Auth::user();
 
-        // Check if user has multiple roles
-        if ($request->hasMultipleRoles()) {
-            return redirect()->route('role.select');
+        // Log them out immediately (we'll log in after OTP)
+        Auth::logout();
+
+        // Store pending login info in session
+        $request->session()->put('pending_user_id', $user->id);
+        $request->session()->put('remember_me', $request->boolean('remember'));
+
+        // Generate and send OTP
+        $otpService = new OtpService();
+        $otp = $otpService->generate($user, 'login');
+
+        try {
+            // IMPORTANT: Use send() not queue() for synchronous sending
+            // Clear config cache first: php artisan optimize:clear
+            Mail::to($user->email)->send(new OtpCodeMail($user, $otp, 'login'));
+
+            Log::info('OTP email sent successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'purpose' => 'login'
+            ]);
+        } catch (\Exception $e) {
+            // Log detailed error for debugging
+            Log::error('Failed to send login OTP email', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'purpose' => 'login',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // In development, show error to user
+            if (config('app.debug')) {
+                return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
+            }
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('otp.verify', ['purpose' => 'login'])
+            ->with('success', 'OTP code sent to your email. Check spam folder if not received.');
     }
 
     /**
