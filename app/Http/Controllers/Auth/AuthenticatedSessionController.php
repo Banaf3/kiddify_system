@@ -46,17 +46,17 @@ class AuthenticatedSessionController extends Controller
         $otp = $otpService->generate($user, 'login');
 
         try {
-            // Use queue() to explicitly queue the email (bypasses SMTP timeout)
+            Log::info('Attempting to queue OTP email', [
+                'queue_driver' => config('queue.default'),
+                'mail_driver' => config('mail.default')
+            ]);
+
+            // Force the 'database' queue connection via Mailable class property
             Mail::to($user->email)->queue(new OtpCodeMail($user, $otp, 'login'));
 
-            Log::info('OTP email sent successfully', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'purpose' => 'login'
-            ]);
+            Log::info('OTP email queued successfully');
         } catch (\Exception $e) {
-            // Log detailed error for debugging
-            Log::error('Failed to send login OTP email', [
+            Log::error('Failed to queue OTP email', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'purpose' => 'login',
