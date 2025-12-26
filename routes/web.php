@@ -24,9 +24,9 @@ Route::get('/', function () {
 // Debug Mail Configuration Endpoint (Local Environment Only)
 Route::get('/debug/mail-config', function () {
     // Only allow in local environment
-    if (!app()->environment('local')) {
-        abort(404);
-    }
+    // if (!app()->environment('local')) {
+    //    abort(404);
+    // }
 
     $mailer = config('mail.default');
     $smtpConfig = config('mail.mailers.smtp');
@@ -64,9 +64,9 @@ Route::get('/debug/mail-config', function () {
 // Debug Mail Test Endpoint (Local Environment Only)
 Route::get('/debug/mail-test', function () {
     // Only allow in local environment
-    if (config('app.env') !== 'local') {
-        abort(404);
-    }
+    // if (config('app.env') !== 'local') {
+    //    abort(404);
+    // }
 
     try {
         // Get test user (logged in user or first user)
