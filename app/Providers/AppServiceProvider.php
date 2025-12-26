@@ -32,7 +32,8 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
         });
 
-        if ($this->app->environment('production')) {
+        // Force HTTPS for all URLs when behind a secure proxy (Railway, Heroku, etc.)
+        if (request()->isSecure() || request()->header('x-forwarded-proto') === 'https') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
         // Define authorization gates for role-based access
