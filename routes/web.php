@@ -21,6 +21,16 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+// Simple diagnostic route
+Route::get('/test-config', function () {
+    return response()->json([
+        'queue_connection' => config('queue.default'),
+        'mail_mailer' => config('mail.default'),
+        'app_env' => config('app.env'),
+        'cache_config' => config('cache.default'),
+    ]);
+});
+
 // Debug Mail Configuration Endpoint (Local Environment Only)
 Route::get('/debug/mail-config', function () {
     // Only allow in local environment
