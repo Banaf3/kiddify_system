@@ -46,8 +46,8 @@ class AuthenticatedSessionController extends Controller
         $otp = $otpService->generate($user, 'login');
 
         try {
-            // IMPORTANT: Use send() not queue() for synchronous sending
-            Mail::to($user->email)->send(new OtpCodeMail($user, $otp, 'login'));
+            // Use queue() to explicitly queue the email (bypasses SMTP timeout)
+            Mail::to($user->email)->queue(new OtpCodeMail($user, $otp, 'login'));
 
             Log::info('OTP email sent successfully', [
                 'user_id' => $user->id,
