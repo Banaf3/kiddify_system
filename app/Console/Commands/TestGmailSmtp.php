@@ -101,19 +101,14 @@ class TestGmailSmtp extends Command
             return self::FAILURE;
         }
 
-        // Find or create test user
-        $user = User::where('email', $email)->first();
+        // Create a temporary user object for testing (no database needed)
+        $user = new User([
+            'name' => 'Test User',
+            'email' => $email,
+        ]);
+        $user->id = 1; // Fake ID for the mailable
 
-        if (!$user) {
-            $this->warn('User not found with email: ' . $email);
-            $this->warn('Using a temporary user object for testing...');
-            $user = new User([
-                'name' => 'Test User',
-                'email' => $email,
-            ]);
-        } else {
-            $this->info('Found user: ' . $user->name);
-        }
+        $this->info('Using test user for email...');
 
         $this->newLine();
         $this->info('Sending test OTP email via SMTP...');
