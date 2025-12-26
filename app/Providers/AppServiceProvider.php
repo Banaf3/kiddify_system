@@ -31,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('ai-chat', function (Request $request) {
             return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
         });
+
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         // Define authorization gates for role-based access
         Gate::define('isAdmin', function (User $user) {
             return $user->isAdmin();
