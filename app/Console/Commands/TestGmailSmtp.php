@@ -122,15 +122,15 @@ class TestGmailSmtp extends Command
             // Test OTP code
             $testOtp = '123456';
 
-            // Force use of SMTP mailer (not log or array)
-            Mail::mailer('smtp')->to($email)->send(new OtpCodeMail($user, $testOtp, 'login'));
+            // Send email using default mailer (should be smtp from .env)
+            Mail::to($email)->send(new OtpCodeMail($user, $testOtp, 'login'));
 
             $this->newLine();
             $this->info('✓ SUCCESS - Email sent successfully!');
             $this->info('Check inbox (and spam folder) for email with OTP: ' . $testOtp);
             $this->newLine();
-            $this->info('SMTP Configuration Used:');
-            $this->line('  Mailer: smtp (forced)');
+            $this->info('Configuration Used:');
+            $this->line('  Mailer: ' . $mailer);
             $this->line('  Host: ' . $host);
             $this->line('  Port: ' . $port);
             $this->line('  Encryption: ' . $encryption);
