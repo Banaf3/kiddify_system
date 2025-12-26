@@ -14,9 +14,6 @@ class OtpCodeMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    // Force queue connection to database
-    public $connection = 'database';
-
     public string $otp;
     public string $purpose;
     public User $user;
@@ -31,6 +28,9 @@ class OtpCodeMail extends Mailable implements ShouldQueue
         $this->otp = $otp;
         $this->purpose = $purpose;
         $this->maskedEmail = $this->maskEmail($user->email);
+
+        // Force queue connection to database
+        $this->onConnection('database');
     }
 
     /**
