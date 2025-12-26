@@ -47,7 +47,6 @@ class AuthenticatedSessionController extends Controller
 
         try {
             // IMPORTANT: Use send() not queue() for synchronous sending
-            // Clear config cache first: php artisan optimize:clear
             Mail::to($user->email)->send(new OtpCodeMail($user, $otp, 'login'));
 
             Log::info('OTP email sent successfully', [
@@ -65,10 +64,8 @@ class AuthenticatedSessionController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            // In development, show error to user
-            if (config('app.debug')) {
-                return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
-            }
+            // ALWAYS show error to user so we can diagnose the issue
+            return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
         }
 
         return redirect()->route('otp.verify', ['purpose' => 'login'])
