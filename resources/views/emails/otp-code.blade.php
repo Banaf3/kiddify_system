@@ -265,7 +265,8 @@
             <!-- Header with Kiddify Logo -->
             <div class="email-header">
                 <div class="logo-container">
-                    <img src="{{ config('app.url') }}/images/kiddify_logo.svg" alt="Kiddify Logo">
+                    <img src="https://kiddifysystem-production.up.railway.app/images/kiddify_logo.svg"
+                        alt="Kiddify Logo">
                 </div>
                 <h1>🔐 Security Verification</h1>
             </div>
