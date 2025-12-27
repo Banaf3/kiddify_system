@@ -26,8 +26,10 @@ Route::get('/test-config', function () {
     return response()->json([
         'queue_connection' => config('queue.default'),
         'mail_mailer' => config('mail.default'),
-        'app_env' => config('app.env'),
-        'cache_config' => config('cache.default'),
+        'resend_client_exists' => class_exists('Resend\Client'),
+        'resend_class_exists' => class_exists('Resend'),
+        'resend_facade_exists' => class_exists('Resend\Laravel\Facades\Resend'),
+        'autoload_check' => file_exists(base_path('vendor/autoload.php')),
     ]);
 });
 
