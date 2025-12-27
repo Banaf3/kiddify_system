@@ -46,25 +46,23 @@ class AuthenticatedSessionController extends Controller
         $otp = $otpService->generate($user, 'login');
 
         try {
-            // Send synchronously (works fast with Resend API)
-            Mail::to($user->email)->send(new OtpCodeMail($user, $otp, 'login'));
+            // Queue email for background sending (avoids SMTP timeout)
+            Mail::to($user->email)->queue(new OtpCodeMail($user, $otp, 'login'));
 
-            Log::info('OTP email sent successfully', [
+            Log::info('OTP email queued successfully', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'purpose' => 'login'
             ]);
         } catch (\Exception $e) {
+            // Log error but DON'T block login - user can still verify OTP
             Log::error('Failed to queue OTP email', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'purpose' => 'login',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage()
             ]);
-
-            // ALWAYS show error to user so we can diagnose the issue
-            return back()->withErrors(['email' => 'Failed to send OTP: ' . $e->getMessage()]);
+            // Continue to OTP page anyway (email might still work via queue worker)
         }
 
         return redirect()->route('otp.verify', ['purpose' => 'login'])
