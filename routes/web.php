@@ -21,6 +21,58 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+// Debug SMTP Route
+Route::get('/debug-smtp', function () {
+    $host = config('mail.mailers.smtp.host');
+    $port = config('mail.mailers.smtp.port');
+    $encryption = config('mail.mailers.smtp.encryption');
+    $username = config('mail.mailers.smtp.username');
+
+    $output = "<h1>SMTP Debug</h1>";
+    $output .= "<strong>Environment:</strong> " . config('app.env') . "<br>";
+    $output .= "<strong>Host:</strong> $host<br>";
+    $output .= "<strong>Port:</strong> $port<br>";
+    $output .= "<strong>Encryption:</strong> $encryption<br>";
+    $output .= "<strong>Username:</strong> $username<br><hr>";
+
+    // 1. Connectivity Check (Socket)
+    $output .= "<h3>1. Socket Connection Test</h3>";
+    $startTime = microtime(true);
+
+    // Prefix ssl:// if encryption is ssl
+    $socketHost = ($encryption === 'ssl' ? 'ssl://' : '') . $host;
+
+    $fp = @fsockopen($socketHost, $port, $errno, $errstr, 5);
+    $endTime = microtime(true);
+
+    if ($fp) {
+        $output .= "<p style='color:green'>✅ Socket Connected Successfully (" . round(($endTime - $startTime) * 1000, 2) . "ms)</p>";
+
+        // Read initial greeting
+        $response = fgets($fp, 515);
+        $output .= "<pre>Server Response: $response</pre>";
+        fclose($fp);
+    } else {
+        $output .= "<p style='color:red'>❌ Socket Connection Failed: $errno - $errstr</p>";
+        $output .= "<p><strong>Diagnosis:</strong> Railway might be blocking this port or outgoing connections.</p>";
+        return $output;
+    }
+
+    // 2. Full Mail Send Check
+    $output .= "<hr><h3>2. Mail::send() Test</h3>";
+    try {
+        Illuminate\Support\Facades\Mail::raw('Test email from Railway via ' . $host, function ($msg) use ($username) {
+            $msg->to($username)
+                ->subject('Railway SMTP Test ' . time());
+        });
+        $output .= "<p style='color:green'>✅ Mail sent successfully! Check your inbox.</p>";
+    } catch (\Exception $e) {
+        $output .= "<p style='color:red'>❌ Mail Send Failed: " . $e->getMessage() . "</p>";
+    }
+
+    return $output;
+});
+
 
 
 Route::get('/dashboard', function () {
