@@ -4,7 +4,7 @@
             <!-- Logo -->
             <div class="shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300 -ml-8">
                 <a href="{{ route('home') }}">
-                    <x-application-logo class="block h-10 w-auto sm:h-16" />
+                    <x-application-logo class="block h-12 w-auto md:h-20" />
                 </a>
             </div>
 
