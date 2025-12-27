@@ -10,9 +10,9 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OtpCodeMail extends Mailable
+class OtpCodeMail extends Mailable implements ShouldQueue
 {
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     public string $otp;
     public string $purpose;
@@ -28,6 +28,9 @@ class OtpCodeMail extends Mailable
         $this->otp = $otp;
         $this->purpose = $purpose;
         $this->maskedEmail = $this->maskEmail($user->email);
+
+        // Force queue connection to database
+        $this->onConnection('database');
     }
 
     /**
