@@ -13,11 +13,26 @@ class DatabaseSeeder extends Seeder
         // Create admin users - only if they don't exist
         $admins = [
             [
-                'name' => 'hamed',
+                'name' => 'khaled',
                 'email' => 'khaled.q557@gmail.com',
                 'password' => '123456123',
                 'phone_number' => '1234567890',
             ],
+
+            [
+                'name' => 'amirah',
+                'email' => 'amirahhannanhasan@gmail.com',
+                'password' => '123456123',
+                'phone_number' => '1234567890',
+            ],
+
+            [
+                'name' => 'atirah',
+                'email' => 'atirahhusna873@gmail.com',
+                'password' => '123456123',
+                'phone_number' => '12345678900',
+            ],
+
             // Add more admins here as needed
             // [
             //     'name' => 'another admin',
