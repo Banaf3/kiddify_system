@@ -33,6 +33,13 @@ class DatabaseSeeder extends Seeder
                 'phone_number' => '12345678900',
             ],
 
+            [
+                'name' => 'Banafi',
+                'email' => 'abu.xd3@gmail.com',
+                'password' => '123456123',
+                'phone_number' => '12345478900',
+            ],
+
             // Add more admins here as needed
             // [
             //     'name' => 'another admin',
