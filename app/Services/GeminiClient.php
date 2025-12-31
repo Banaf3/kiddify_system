@@ -101,7 +101,14 @@ class GeminiClient
         }
 
         // Get working model from cache or determine new one
-        $cachedModel = Cache::get('gemini_working_model');
+        $cachedModel = null;
+        try {
+            $cachedModel = Cache::get('gemini_working_model');
+        } catch (\Exception $e) {
+            // Silently ignore cache errors (e.g., DB connection down) and proceed without cache
+            Log::warning('GeminiClient cache error: ' . $e->getMessage());
+        }
+
         $model = $preferredModel ?? config('services.gemini.model', 'gemini-1.5-flash');
 
         // Try cached model first if available
@@ -115,7 +122,11 @@ class GeminiClient
         // Try preferred model
         $result = $this->tryGenerateContent($model, $contents);
         if ($result['success']) {
-            Cache::put('gemini_working_model', $model, now()->addHour());
+            try {
+                Cache::put('gemini_working_model', $model, now()->addHour());
+            } catch (\Exception $e) {
+                // Ignore cache write errors
+            }
             return $result;
         }
 
@@ -130,7 +141,11 @@ class GeminiClient
 
                 $result = $this->tryGenerateContent($fallbackModel, $contents);
                 if ($result['success']) {
-                    Cache::put('gemini_working_model', $fallbackModel, now()->addHour());
+                    try {
+                        Cache::put('gemini_working_model', $fallbackModel, now()->addHour());
+                    } catch (\Exception $e) {
+                        // Ignore
+                    }
                     Log::info("Fallback successful with model: {$fallbackModel}");
                     return $result;
                 }
@@ -234,6 +249,14 @@ class GeminiClient
     private function parseErrorResponse(int $statusCode, string $responseBody, string $model): array
     {
         $isDev = app()->environment('local', 'development');
+
+        if (($statusCode === 403 || $statusCode === 400) && str_contains($responseBody, 'API key was reported as leaked')) {
+            return $this->errorResponse(
+                'AUTH_ERROR',
+                'CRITICAL: Your Gemini API Key has been disabled because it was leaked publicly. Please generate a NEW key in Google AI Studio.',
+                $statusCode
+            );
+        }
 
         return match ($statusCode) {
             401, 403 => $this->errorResponse(
