@@ -23,10 +23,9 @@ class GeminiClient
         $this->baseUrl = config('services.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta');
         $this->timeout = config('services.gemini.timeout', 20);
         $this->fallbackModels = [
-            'gemini-2.5-flash',
-            'gemini-2.5-pro',
-            'gemini-flash-latest',
-            'gemini-pro-latest'
+            'gemini-1.5-flash',
+            'gemini-1.5-pro',
+            'gemini-pro'
         ];
     }
 
@@ -240,36 +239,36 @@ class GeminiClient
             401, 403 => $this->errorResponse(
                 'AUTH_ERROR',
                 $isDev
-                    ? 'Invalid Gemini API key or API not enabled. Check GEMINI_API_KEY in .env'
-                    : 'Authentication error',
+                ? 'Invalid Gemini API key or API not enabled. Check GEMINI_API_KEY in .env'
+                : 'Authentication error',
                 $statusCode
             ),
             404 => $this->errorResponse(
                 'NOT_FOUND',
                 $isDev
-                    ? "Model '{$model}' not found OR wrong base URL. Check GEMINI_BASE_URL and run: php artisan gemini:models"
-                    : 'Service configuration error',
+                ? "Model '{$model}' not found OR wrong base URL. Check GEMINI_BASE_URL and run: php artisan gemini:models"
+                : 'Service configuration error',
                 $statusCode
             ),
             429 => $this->errorResponse(
                 'RATE_LIMIT',
                 $isDev
-                    ? 'Rate limit exceeded. Gemini API allows 60 req/min. Wait 60 seconds.'
-                    : 'Too many requests. Please wait.',
+                ? 'Rate limit exceeded. Gemini API allows 60 req/min. Wait 60 seconds.'
+                : 'Too many requests. Please wait.',
                 $statusCode
             ),
             500, 503 => $this->errorResponse(
                 'SERVER_ERROR',
                 $isDev
-                    ? "Gemini server error ({$statusCode}). Try again later or check logs."
-                    : 'Service temporarily unavailable',
+                ? "Gemini server error ({$statusCode}). Try again later or check logs."
+                : 'Service temporarily unavailable',
                 $statusCode
             ),
             default => $this->errorResponse(
                 'API_ERROR',
                 $isDev
-                    ? "Gemini API error (Status: {$statusCode}). Check logs for details."
-                    : 'An error occurred',
+                ? "Gemini API error (Status: {$statusCode}). Check logs for details."
+                : 'An error occurred',
                 $statusCode
             )
         };
