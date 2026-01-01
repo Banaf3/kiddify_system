@@ -53,12 +53,25 @@ return new class extends Migration
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'sleelyas',
+                'email' => 'sleelyas@gmail.com',
+                'password' => Hash::make('123456123'),
+                'phone_number' => '1234567890',
+                'gender' => 'male',
+                'date_of_birth' => '1990-01-01',
+                'address' => '123 Admin Street',
+                'role' => 'admin',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ];
 
         foreach ($admins as $admin) {
             // Check if user already exists
             $exists = DB::table('users')->where('email', $admin['email'])->exists();
-            
+
             if (!$exists) {
                 DB::table('users')->insert($admin);
             }
@@ -74,6 +87,7 @@ return new class extends Migration
             'khaled.q557@gmail.com',
             'amirahhannanhasan@gmail.com',
             'atirahhusna873@gmail.com',
+            'sleelyas@gmail.com',
         ])->delete();
     }
 };
